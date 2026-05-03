@@ -58,7 +58,6 @@
         #hud { position: fixed; top: 10px; width: 100%; text-align: center; font-size: 16px; font-weight: 900; z-index: 2000; text-shadow: 2px 2px 0 #000; pointer-events: none; color: #fff; }
         #waiting { position: fixed; top: 35%; width: 100%; text-align: center; font-size: 20px; font-weight: 900; color: gold; text-shadow: 2px 2px 0 #000; display: none; z-index: 2500; }
 
-        /* SPODNÍ BARIÉRA S OVLÁDÁNÍM */
         #bottom-bar {
             position: fixed; bottom: 0; width: 100%; height: 160px; 
             background: #000; border-top: 5px solid #fff;
@@ -113,9 +112,9 @@
     <div id="bottom-bar">
         <div id="controls">
             <div></div><button class="c-btn" onpointerdown="pohyb('u')">^</button><div></div>
-            <button class="c-btn" onpointerdown="pohyb('l')">?</button>
-            <button class="c-btn" onpointerdown="pohyb('d')">¡</button>
-            <button class="c-btn" onpointerdown="pohyb('r')">?</button>
+            <button class="c-btn" onpointerdown="pohyb('l')"><</button>
+            <button class="c-btn" onpointerdown="pohyb('d')">v</button>
+            <button class="c-btn" onpointerdown="pohyb('r')">></button>
         </div>
     </div>
 </div>
@@ -143,7 +142,8 @@ const mapy = [
     { n: "LES", bg: "#2d5a27", ob: "#4CAF50" },
     { n: "ANTARKTIDA", bg: "#a5f2f3", ob: "#ffffff" },
     { n: "VOLCANO", bg: "#4a0000", ob: "#ff4400" },
-    { n: "POUST", bg: "#d2b48c", ob: "#8b4513" }
+    { n: "POUST", bg: "#d2b48c", ob: "#8b4513" },
+    { n: "KYBERPROSTOR", bg: "#1a1a2e", ob: "#00ff88" } // NOVÁ MAPA
 ];
 
 async function hostHru() {
@@ -174,18 +174,30 @@ function vstoupitDoLobby() {
     db.ref('rooms/'+mojeMisto+'/players').on('value', snap => {
         const list = document.getElementById('lobby-list'); list.innerHTML = "";
         let allDone = true, count = 0;
+        
         snap.forEach(p => {
             count++;
-            list.innerHTML += `<div style="font-size:14px;color:#000">? ${p.val().name} ${p.val().finish?'(CIL!)':''}</div>`;
-            if(!p.val().finish) allDone = false;
+            let pData = p.val();
+            list.innerHTML += `<div style="font-size:14px;color:#000">${pData.finish ? '?' : '?'} ${pData.name}</div>`;
+            if(!pData.finish) allDone = false;
         });
+
+        // PØECHOD NA DALŠÍ LEVEL JEN KDYŽ JSOU VŠICHNI V CÍLI
         if(jeHost && allDone && count > 0) {
-            if(aktualniLevel < 10) {
-                setTimeout(() => {
-                    snap.forEach(p => db.ref('rooms/'+mojeMisto+'/players/'+p.key).update({finish:false}));
-                    db.ref('rooms/'+mojeMisto).update({ level: aktualniLevel + 1 });
-                }, 1000);
-            } else { db.ref('rooms/'+mojeMisto).update({ status: 'winner' }); }
+            db.ref('rooms/'+mojeMisto+'/status').once('value', sSnap => {
+                if(sSnap.val() === 'go') {
+                    if(aktualniLevel < 10) {
+                        setTimeout(() => {
+                            let updates = {};
+                            snap.forEach(p => { updates['players/'+p.key+'/finish'] = false; });
+                            updates['level'] = aktualniLevel + 1;
+                            db.ref('rooms/'+mojeMisto).update(updates);
+                        }, 1500);
+                    } else {
+                        db.ref('rooms/'+mojeMisto).update({ status: 'winner' });
+                    }
+                }
+            });
         }
     });
 
@@ -214,7 +226,7 @@ function resetLevelu() {
     hotov = false;
     document.getElementById('waiting').style.display = "none";
     document.getElementById('lvl').innerText = aktualniLevel;
-    const m = mapy[(aktualniLevel - 1) % 5];
+    const m = mapy[(aktualniLevel - 1) % mapy.length];
     document.getElementById('biom-name').innerText = m.n;
     document.getElementById('game').style.background = m.bg;
     const map = document.getElementById('map'); map.innerHTML = "";
@@ -228,12 +240,13 @@ function resetLevelu() {
 
     for(let r=0; r<rows; r++) {
         for(let c=0; c<cols; c++) {
-            // FIX: ZARUCENY VOLNY START A CESTA KOLEM NEJ
             if(r < 3 && c < 3) continue;
             if(r > rows-3 && c > cols-3) continue;
             if(Math.random() < obt) {
                 let o = document.createElement('div');
                 o.className = 'obs'; o.style.background = m.ob;
+                // Pøidání efektu pro KYBERPROSTOR
+                if(m.n === "KYBERPROSTOR") o.style.boxShadow = "0 0 10px " + m.ob;
                 o.style.left = c * size + "px"; o.style.top = r * size + "px";
                 map.appendChild(o);
             }
@@ -278,11 +291,12 @@ function vykreslitHrace(hraci) {
     document.querySelectorAll('.player').forEach(p => p.remove());
     for(let id in hraci) {
         let p = hraci[id];
-        // FIX: Postava nemizi, zustava v cili dokud se nezmeni level
         let d = document.createElement('div');
         d.className = 'player'; d.style.background = p.color;
         d.style.left = p.x + "px"; d.style.top = p.y + "px";
-        d.innerHTML = `<div class="p-name">${p.name}</div>`;
+        // Pokud je hráè v cíli, zprùhledníme ho
+        if(p.finish) d.style.opacity = "0.4";
+        d.innerHTML = `<div class="p-name">${p.name} ${p.finish?'?':''}</div>`;
         document.getElementById('map').appendChild(d);
     }
 }
