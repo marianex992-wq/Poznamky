@@ -12,7 +12,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; user-select: none; font-family: 'Montserrat', sans-serif; }
         body { margin: 0; background: var(--bg); overflow: hidden; position: fixed; width: 100%; height: 100%; color: #fff; }
         
-        /* Animovan√© pozad√≠ s kostiƒçkami */
+        /* AnimovanÈ pozadÌ s kostiËkami */
         body::before {
             content: ''; position: absolute; inset: -100px;
             background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -59,14 +59,14 @@
 </head>
 <body>
 
-<div class="wallet">ü™ô <span id="coin-val">0</span></div>
+<div class="wallet">?? <span id="coin-val">0</span></div>
 
 <div id="screen-start" class="screen">
     <div class="card">
         <h1>MAZE MADNESS</h1>
         <div class="sub">MULTIPLAYER CHALLENGE</div>
         
-        <input id="nick" placeholder="TVOJE JM√âNO" maxlength="10">
+        <input id="nick" placeholder="TVOJE JM…NO" maxlength="10">
         
         <div class="diff-row">
             <button class="diff-btn active" id="d-easy" onclick="setDiff('easy', 10, 'd-easy')">EASY</button>
@@ -74,23 +74,23 @@
             <button class="diff-btn" id="d-extr" onclick="setDiff('extrem', 30, 'd-extr')">EXTREM</button>
         </div>
         
-        <button class="btn btn-main" onclick="hostHru()">VYTVO≈òIT HRU</button>
+        <button class="btn btn-main" onclick="hostHru()">VYTVOÿIT HRU</button>
         <button class="btn btn-sec" onclick="openShop()">OBCHOD SE SKINY</button>
         
         <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0;"></div>
         
-        <input id="room-input" placeholder="K√ìD POKOJE">
-        <button class="btn btn-join" onclick="pripojHru()">P≈òIPOJIT SE</button>
+        <input id="room-input" placeholder="K”D POKOJE">
+        <button class="btn btn-join" onclick="pripojHru()">PÿIPOJIT SE</button>
     </div>
 </div>
 
 <div id="screen-lobby" class="screen" style="display:none">
     <div class="card">
-        <div class="sub">K√ìD TV√â HRY</div>
+        <div class="sub">K”D TV… HRY</div>
         <div id="display-code" style="font-size:45px; font-weight:900; color:var(--accent); margin-bottom:15px;">----</div>
         <div id="lobby-list" style="text-align:left; background:rgba(0,0,0,0.2); border-radius:15px; padding:15px; margin-bottom:20px; font-size: 14px;"></div>
         <button id="start-btn" class="btn btn-main" style="display:none" onclick="odstartovat()">START HRY</button>
-        <div id="wait-msg" style="font-size:11px; opacity:0.6;">ƒåEK√Å SE NA HOSTITELE...</div>
+        <div id="wait-msg" style="font-size:11px; opacity:0.6;">»EK¡ SE NA HOSTITELE...</div>
     </div>
 </div>
 
@@ -99,16 +99,16 @@
     <div id="map"></div>
     <div id="controls-wrapper">
         <div id="controls">
-            <div></div><button class="arrow" onpointerdown="pohyb('u')">‚Üë</button><div></div>
-            <button class="arrow" onpointerdown="pohyb('l')">‚Üê</button>
-            <button class="arrow" onpointerdown="pohyb('d')">‚Üì</button>
-            <button class="arrow" onpointerdown="pohyb('r')">‚Üí</button>
+            <div></div><button class="arrow" onpointerdown="pohyb('u')">^</button><div></div>
+            <button class="arrow" onpointerdown="pohyb('l')">ã</button>
+            <button class="arrow" onpointerdown="pohyb('d')">°</button>
+            <button class="arrow" onpointerdown="pohyb('r')">õ</button>
         </div>
     </div>
 </div>
 
 <script>
-// P≈ÆVODN√ç FIREBASE LOGIKA (Nezmƒõnƒõna)
+// PŸVODNÕ FIREBASE LOGIKA (NezmÏnÏna)
 const firebaseConfig = { databaseURL: "https://mejdrixgame-default-rtdb.firebaseio.com/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -127,7 +127,7 @@ function setDiff(d, m, id) {
 }
 
 async function hostHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
+    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
     mojeMisto = Math.floor(1000 + Math.random() * 8999).toString();
     jeHost = true;
     await db.ref('rooms/' + mojeMisto).set({ status: 'lobby', level: 1, mode: obtiznost, maxLvl: maxLevelu });
@@ -135,7 +135,7 @@ async function hostHru() {
 }
 
 async function pripojHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
+    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
     mojeMisto = document.getElementById('room-input').value;
     if(!mojeMisto) return;
     const snap = await db.ref('rooms/' + mojeMisto).once('value');
@@ -156,7 +156,7 @@ function vstoupitDoLobby() {
         const list = document.getElementById('lobby-list'); list.innerHTML = "";
         snap.forEach(p => {
             let pd = p.val();
-            list.innerHTML += `<div style="margin-bottom:5px;">‚Ä¢ ${pd.name} ${pd.finish?'(HOTOVO)':''}</div>`;
+            list.innerHTML += `<div style="margin-bottom:5px;">ï ${pd.name} ${pd.finish?'(HOTOVO)':''}</div>`;
         });
     });
 
@@ -188,7 +188,7 @@ function generujMapu() {
             }
         }
     }
-    let g = document.createElement('div'); g.className = 'goal'; g.innerText = "C√çL";
+    let g = document.createElement('div'); g.className = 'goal'; g.innerText = "CÕL";
     g.style.left = (cols-2)*40+"px"; g.style.top = (rows-2)*40+"px"; map.appendChild(g);
 }
 
@@ -223,7 +223,7 @@ function vykresliHraci(h) {
     }
 }
 
-function openShop() { alert("Obchod bude brzy otev≈ôen!"); }
+function openShop() { alert("Obchod bude brzy otev¯en!"); }
 </script>
 </body>
 </html>
