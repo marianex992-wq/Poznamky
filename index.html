@@ -6,97 +6,59 @@
     <title>MAZE MADNESS</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --p: #fe2c55;
-            --accent: #25F4EE;
-            --gold: #FFD700; 
-            --bg: #05050a;
-            --font-game: 'Oswald', sans-serif;
-            --font-ui: 'Montserrat', sans-serif;
+            --p: #fe2c55; --accent: #25F4EE; --gold: #FFD700; --bg: #05050a;
+            --font-game: 'Oswald', sans-serif; --font-ui: 'Montserrat', sans-serif;
         }
-        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; user-select: none; }
+        body { margin: 0; font-family: var(--font-ui); background: var(--bg); overflow: hidden; position: fixed; width: 100%; height: 100%; color: #fff; }
 
-        body { 
-            margin: 0; font-family: var(--font-ui); background: var(--bg); 
-            overflow: hidden; position: fixed; width: 100%; height: 100%; color: #fff;
-        }
-
-        /* --- ANIMOVANÉ 3D GRID POZADÍ --- */
+        /* --- 3D GRID POZADÍ --- */
         body::before {
             content: ''; position: absolute; inset: -100px;
             background-image: linear-gradient(rgba(255, 255, 255, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
-            background-size: 50px 50px; transform: perspective(1000px) rotateX(60deg) translateY(0px);
+            background-size: 50px 50px; transform: perspective(1000px) rotateX(60deg);
             animation: gridMove 10s linear infinite; z-index: 0; opacity: 0.5;
         }
-        @keyframes gridMove {
-            0% { transform: perspective(1000px) rotateX(60deg) translateY(0px); }
-            100% { transform: perspective(1000px) rotateX(60deg) translateY(100px); }
-        }
+        @keyframes gridMove { 0% { transform: perspective(1000px) rotateX(60deg) translateY(0px); } 100% { transform: perspective(1000px) rotateX(60deg) translateY(100px); } }
         
         .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(15px); padding: 30px; border-radius: 35px; text-align: center; width: 100%; max-width: 360px; border: 2px solid rgba(255,255,255,0.08); box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+
+        h1 { font-family: var(--font-game); font-size: 38px; text-transform: uppercase; text-shadow: 0 0 20px var(--p); margin: 0; }
+        .subtitle { font-size: 11px; opacity: 0.6; letter-spacing: 3px; margin-bottom: 25px; }
+
+        input { width: 100%; padding: 16px; margin: 10px 0; border: 2px solid rgba(255,255,255,0.1); border-radius: 18px; background: rgba(0,0,0,0.5); color: #fff; text-align: center; font-weight: bold; outline: none; }
         
-        .card { 
-            background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
-            padding: 30px; border-radius: 35px; text-align: center; width: 100%; max-width: 360px; 
-            border: 2px solid rgba(255,255,255,0.08); box-shadow: 0 30px 60px rgba(0,0,0,0.8); position: relative;
-        }
+        .diff-box { display: flex; gap: 8px; margin: 10px 0; }
+        .diff-opt { flex: 1; padding: 12px 5px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 900; cursor: pointer; color: rgba(255,255,255,0.4); }
+        .diff-opt.active { background: #fff; color: #000; box-shadow: 0 0 15px #fff; }
 
-        h1 { 
-            font-family: var(--font-game); margin: 0 0 5px; font-size: 38px; font-weight: 700; 
-            text-transform: uppercase; text-shadow: 0 0 20px var(--p); letter-spacing: -1px;
-        }
-        .subtitle { font-size: 11px; opacity: 0.6; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; font-weight: 700; }
-
-        input { width: 100%; padding: 16px; margin: 10px 0; border: 2px solid rgba(255,255,255,0.1); border-radius: 18px; font-size: 16px; font-weight: bold; text-align: center; background: rgba(0,0,0,0.5); color: #fff; outline: none; }
-        input:focus { border-color: var(--accent); }
-
-        /* OPRAVA VÝBÌRU OBTÍŽNOSTI */
-        .diff-box { display: flex; gap: 8px; margin: 10px 0; width: 100%; }
-        .diff-opt { flex: 1; padding: 12px 5px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); font-size: 10px; font-weight: 900; cursor: pointer; transition: 0.2s; color: rgba(255,255,255,0.4); }
-        .diff-opt.active { background: #fff; color: #000; border-color: #fff; box-shadow: 0 0 15px #fff; }
-
-        .btn { 
-            background: var(--p); color: #fff; border: none; padding: 16px; border-radius: 18px; 
-            cursor: pointer; width: 100%; font-family: var(--font-game); font-weight: 700; font-size: 17px; 
-            text-transform: uppercase; transition: 0.2s; margin-top: 12px; box-shadow: 0 10px 20px rgba(254,44,85,0.3);
-        }
-        .btn:active { transform: scale(0.96); }
-        .btn-sec { background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.1); box-shadow: none; color: rgba(255,255,255,0.7); }
-        .btn-accent { background: var(--accent); color: #000; box-shadow: 0 10px 20px rgba(37,244,238,0.3); }
+        .btn { background: var(--p); color: #fff; border: none; padding: 16px; border-radius: 18px; width: 100%; font-family: var(--font-game); font-size: 17px; text-transform: uppercase; cursor: pointer; margin-top: 12px; }
+        .btn-accent { background: var(--accent); color: #000; }
+        .btn-sec { background: rgba(255,255,255,0.06); color: #fff; }
 
         #lobby-list { text-align:left; padding:15px; background: rgba(0,0,0,0.3); border-radius:20px; margin:20px 0; min-height: 80px; }
-        .player-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+        .top-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; z-index: 2000; }
+        .wallet-ui { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 50px; border: 2px solid var(--gold); color: var(--gold); font-weight: 900; }
 
-        .top-ui { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 2000; }
-        .wallet-ui { background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 50px; border: 2px solid var(--gold); color: var(--gold); font-weight: 900; font-size: 18px; }
-
-        #game { display: none; width: 100vw; height: 100vh; position: relative; z-index: 10; }
+        #game { display: none; width: 100vw; height: 100vh; position: relative; }
         #map { width: 100%; height: calc(100% - 160px); position: absolute; top: 0; }
         
-        .player { position: absolute; width: 28px; height: 28px; border-radius: 8px; z-index: 500; border: 3px solid #fff; transition: 0.08s linear; }
-        .skin-neon { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
-        .skin-gold { background: var(--gold); box-shadow: 0 0 15px var(--gold); }
-        .skin-rainbow { animation: rainbowSkin 2s linear infinite; }
-        @keyframes rainbowSkin { 0% { background: red; } 33% { background: green; } 66% { background: blue; } 100% { background: red; } }
-
-        .p-name { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; white-space: nowrap; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 4px; }
-
-        .obs { position: absolute; width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); }
-        .goal { position: absolute; width: 60px; height: 60px; border: 4px dashed #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; animation: rot 4s linear infinite; }
+        .player { position: absolute; width: 28px; height: 28px; border-radius: 8px; border: 3px solid #fff; z-index: 500; transition: 0.1s linear; }
+        .obs { position: absolute; width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); }
+        .goal { position: absolute; width: 66px; height: 66px; border: 5px dashed #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; animation: rot 4s linear infinite; }
         @keyframes rot { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        #hud { position: fixed; top: 20px; width: 100%; text-align: center; font-family: var(--font-game); font-size: 20px; z-index: 2000; }
-        #bottom-bar { position: fixed; bottom: 0; width: 100%; height: 160px; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 3000; border-top: 1px solid rgba(255,255,255,0.1); }
+        #bottom-bar { position: fixed; bottom: 0; width: 100%; height: 160px; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 3000; }
         #controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 15px; }
-        .c-btn { width: 75px; height: 75px; background: #1a1a2a; border: 2px solid rgba(255,255,255,0.1); border-radius: 20px; font-size: 30px; color: #fff; }
-        .c-btn:active { background: #fff; color: #000; }
-
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .shop-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; border: 2px solid transparent; cursor: pointer; font-size: 10px; font-weight: 800; }
-        .shop-item.selected { border-color: #fff; background: rgba(255,255,255,0.15); }
+        .c-btn { width: 75px; height: 75px; background: #1a1a2a; border: 2px solid rgba(255,255,255,0.1); border-radius: 25px; font-size: 30px; color: #fff; }
+        
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .shop-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 20px; border: 2px solid transparent; cursor: pointer; }
+        .shop-item.selected { background: #fff; color: #000; }
     </style>
 </head>
 <body>
@@ -110,14 +72,13 @@
     <div class="card">
         <h1>MAZE MADNESS</h1>
         <div class="subtitle">MULTIPLAYER LABYRINT</div>
-        <input id="nick" placeholder="TVOJE PØEZDÍVKA" maxlength="10">
+        <input id="nick" placeholder="PØEZDÍVKA" maxlength="10">
         <div class="diff-box">
-            <div class="diff-opt active" id="d-easy" onclick="setDiff('easy', 10, 'd-easy')">EASY</div>
-            <div class="diff-opt" id="d-hard" onclick="setDiff('hard', 15, 'd-hard')">HARD</div>
-            <div class="diff-opt" id="d-extr" onclick="setDiff('extrem', 30, 'd-extr')">EXTREM</div>
+            <div class="diff-opt active" id="d-easy" onclick="setDiff('easy', 10, this)">EASY</div>
+            <div class="diff-opt" id="d-hard" onclick="setDiff('hard', 15, this)">HARD</div>
+            <div class="diff-opt" id="d-extr" onclick="setDiff('extrem', 30, this)">EXTREM</div>
         </div>
         <button class="btn" onclick="hostHru()">VYTVOØIT HRU</button>
-        <div style="margin: 15px 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>
         <input id="room-input" placeholder="KÓD POKOJE">
         <button class="btn btn-accent" onclick="pripojHru()">PØIPOJIT SE</button>
     </div>
@@ -125,29 +86,26 @@
 
 <div id="screen-lobby" class="screen" style="display:none">
     <div class="card">
-        <div class="subtitle">KÓD POKOJE</div>
-        <div id="display-code" style="font-size:42px; font-weight:900; color:var(--accent); margin-bottom:10px;">----</div>
+        <div id="display-code" style="font-size:42px; font-weight:900; color:var(--accent);">----</div>
         <div id="lobby-list"></div>
-        <button id="start-btn" class="btn" style="display:none" onclick="odstartovat()">START ZÁPASU</button>
-        <p id="wait-msg" style="font-size:10px; opacity:0.5;">ÈEKÁME NA HOSTITELE...</p>
+        <button id="start-btn" class="btn" style="display:none" onclick="odstartovat()">START</button>
     </div>
 </div>
 
 <div id="screen-shop" class="screen" style="display:none">
     <div class="card">
-        <h1>SKIN SHOP</h1>
+        <h1>SHOP</h1>
         <div class="shop-grid">
-            <div class="shop-item selected" id="s-default" onclick="buySkin('default', 0)">ZÁKLADNÍ (0)</div>
-            <div class="shop-item" id="s-neon" onclick="buySkin('neon', 50)">NEON (50)</div>
-            <div class="shop-item" id="s-gold" onclick="buySkin('gold', 100)">ZLATÝ (100)</div>
-            <div class="shop-item" id="s-rainbow" onclick="buySkin('rainbow', 250)">DUHA (250)</div>
+            <div class="shop-item selected" onclick="buySkin('default', 0)">ZÁKLADNÍ</div>
+            <div class="shop-item" onclick="buySkin('neon', 50)">NEON (50)</div>
+            <div class="shop-item" onclick="buySkin('gold', 100)">GOLD (100)</div>
+            <div class="shop-item" onclick="buySkin('rainbow', 250)">RAINBOW (250)</div>
         </div>
         <button class="btn btn-sec" onclick="closeShop()">ZPÌT</button>
     </div>
 </div>
 
 <div id="game">
-    <div id="hud"><span id="biom-name">MAPA</span> | LVL: <span id="lvl">1</span> / <span id="max-lvl">10</span></div>
     <div id="map"></div>
     <div id="bottom-bar">
         <div id="controls">
@@ -172,28 +130,17 @@ let coins = parseInt(localStorage.getItem('mm_coins')) || 0;
 let activeSkin = localStorage.getItem('mm_skin') || 'default';
 document.getElementById('coin-val').innerText = coins;
 
-const mapy = [
-    { n: "OCEÁN", bg: "#003344", ob: "#00aaff" },
-    { n: "LES", bg: "#1a331a", ob: "#2ecc71" },
-    { n: "VOLCANO", bg: "#330000", ob: "#e74c3c" },
-    { n: "VESMÍR", bg: "#050015", ob: "#9b59b6" }
-];
-
-function setDiff(d, m, id) {
+function setDiff(d, m, el) {
     obtiznost = d; maxLevelu = m;
     document.querySelectorAll('.diff-opt').forEach(o => o.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    el.classList.add('active');
 }
 
-function openShop() { document.querySelectorAll('.screen').forEach(s => s.style.display = 'none'); document.getElementById('screen-shop').style.display = 'flex'; }
-function closeShop() { document.getElementById('screen-shop').style.display = 'none'; document.getElementById('screen-start').style.display = 'flex'; }
+function openShop() { document.getElementById('screen-start').style.display='none'; document.getElementById('screen-shop').style.display='flex'; }
+function closeShop() { document.getElementById('screen-shop').style.display='none'; document.getElementById('screen-start').style.display='flex'; }
 
 function buySkin(name, price) {
-    if(coins >= price) { 
-        activeSkin = name; localStorage.setItem('mm_skin', name);
-        document.querySelectorAll('.shop-item').forEach(i => i.classList.remove('selected'));
-        document.getElementById('s-'+name).classList.add('selected');
-    }
+    if(coins >= price) { activeSkin = name; localStorage.setItem('mm_skin', name); alert("Skin vybrán!"); }
 }
 
 async function hostHru() {
@@ -208,8 +155,7 @@ async function pripojHru() {
     mojeJmeno = document.getElementById('nick').value || "Hráè";
     mojeMisto = document.getElementById('room-input').value;
     if(!mojeMisto) return;
-    const snap = await db.ref('rooms/' + mojeMisto).once('value');
-    if(snap.exists()) { vstoupitDoLobby(); }
+    vstoupitDoLobby();
 }
 
 function vstoupitDoLobby() {
@@ -221,10 +167,7 @@ function vstoupitDoLobby() {
     db.ref('rooms/'+mojeMisto+'/players/'+mujId).set({ name: mojeJmeno, x: 30, y: 30, skin: activeSkin, finish: false });
     db.ref('rooms/'+mojeMisto+'/players').on('value', snap => {
         const list = document.getElementById('lobby-list'); list.innerHTML = "";
-        snap.forEach(p => {
-            let pd = p.val();
-            list.innerHTML += `<div class="player-row"><span>${pd.name}</span> <span style="color:var(--accent)">${pd.finish?'HOTOVO':'ÈEKÁ'}</span></div>`;
-        });
+        snap.forEach(p => { list.innerHTML += `<div>• ${p.val().name}</div>`; });
     });
     db.ref('rooms/'+mojeMisto+'/status').on('value', snap => { if(snap.val() === 'go') spustitHru(); });
 }
@@ -240,26 +183,19 @@ function spustitHru() {
 }
 
 function generujMapu() {
-    hotov = false; document.getElementById('lvl').innerText = aktualniLevel;
-    const m = mapy[(aktualniLevel-1) % mapy.length];
-    document.getElementById('biom-name').innerText = m.n;
-    document.getElementById('game').style.background = m.bg;
-    const map = document.getElementById('map'); map.innerHTML = ""; mojePos = { x: 25, y: 25 };
+    hotov = false; const map = document.getElementById('map'); map.innerHTML = ""; mojePos = { x: 25, y: 25 };
     const cols = Math.floor(window.innerWidth / 40);
     const rows = Math.floor((window.innerHeight - 160) / 40);
-    
     for(let r=0; r<rows; r++) {
         for(let c=0; c<cols; c++) {
             if((r < 2 && c < 2) || (r > rows-3 && c > cols-3)) continue;
             if(Math.random() < 0.2) {
                 let o = document.createElement('div'); o.className = 'obs';
-                o.style.borderColor = m.ob; o.style.left = c*40+"px"; o.style.top = r*40+"px";
-                map.appendChild(o);
+                o.style.left = c*40+"px"; o.style.top = r*40+"px"; map.appendChild(o);
             }
         }
     }
-    let g = document.createElement('div'); g.className = 'goal'; g.innerText = "CÍL";
-    g.style.left = (cols-2)*40+"px"; g.style.top = (rows-2)*40+"px"; map.appendChild(g);
+    let g = document.createElement('div'); g.className = 'goal'; g.style.left = (cols-2)*40+"px"; g.style.top = (rows-2)*40+"px"; map.appendChild(g);
 }
 
 function pohyb(s) {
@@ -280,20 +216,16 @@ function pohyb(s) {
     const goal = document.querySelector('.goal');
     if(nx < parseInt(goal.style.left)+60 && nx+28 > parseInt(goal.style.left) && ny < parseInt(goal.style.top)+60 && ny+28 > parseInt(goal.style.top)) {
         hotov = true; db.ref('rooms/'+mojeMisto+'/players/'+mujId).update({ finish: true });
-        coins += 10; localStorage.setItem('mm_coins', coins);
-        document.getElementById('coin-val').innerText = coins;
+        coins += 10; localStorage.setItem('mm_coins', coins); document.getElementById('coin-val').innerText = coins;
     }
 }
 
 function vykresliHraci(h) {
     document.querySelectorAll('.player').forEach(p => p.remove());
     for(let id in h) {
-        let p = h[id];
-        let d = document.createElement('div');
-        d.className = `player skin-${p.skin || 'default'}`;
-        d.style.left = p.x+"px"; d.style.top = p.y+"px";
-        if(id === mujId) d.style.borderColor = "var(--p)";
-        d.innerHTML = `<div class="p-name">${p.name}</div>`;
+        let d = document.createElement('div'); d.className = 'player';
+        d.style.left = h[id].x+"px"; d.style.top = h[id].y+"px";
+        if(id === mujId) d.style.background = "var(--p)";
         document.getElementById('map').appendChild(d);
     }
 }
