@@ -7,7 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        :root { --p: #fe2c55; --accent: #25F4EE; }
+        :root { --p: #fe2c55; --accent: #25F4EE; --gold: #FFD700; }
         
         * { 
             box-sizing: border-box; 
@@ -17,7 +17,7 @@
 
         body { 
             margin: 0; 
-            font-family: sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             background: #000; 
             overflow: hidden; 
             position: fixed; 
@@ -29,51 +29,58 @@
         .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; color: #000; }
         
         #screen-start, #screen-lobby {
-            background-color: #ffffff;
+            background-color: #0f0f0f;
             background-image: 
-                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
         }
 
-        .card { background: rgba(255,255,255,0.95); padding: 20px; border-radius: 25px; text-align: center; width: 85%; max-width: 300px; border: 6px solid #000; box-shadow: 8px 8px 0 rgba(0,0,0,0.2); }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 4px solid #000; border-radius: 12px; font-size: 18px; font-weight: bold; text-align: center; outline: none; }
-        .btn { background: var(--p); color: #fff; border: 4px solid #000; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 900; font-size: 18px; text-transform: uppercase; }
+        .card { background: #fff; padding: 25px; border-radius: 30px; text-align: center; width: 90%; max-width: 320px; border: 8px solid #000; box-shadow: 12px 12px 0 rgba(0,0,0,0.5); }
+        h1 { margin: 0 0 15px 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 4px solid #000; border-radius: 15px; font-size: 18px; font-weight: bold; text-align: center; outline: none; background: #f0f0f0; }
+        .btn { background: var(--p); color: #fff; border: 4px solid #000; padding: 12px; border-radius: 15px; cursor: pointer; width: 100%; font-weight: 900; font-size: 18px; text-transform: uppercase; transition: 0.1s; }
+        .btn:active { transform: translate(4px, 4px); }
 
-        #lobby-list { text-align:left; padding:10px; background:rgba(0,0,0,0.03); border-radius:12px; margin:10px 0; border:3px solid #000; min-height: 60px; color: #000; overflow-y: auto; max-height: 120px; }
+        .diff-box { display: flex; gap: 5px; margin: 15px 0; background: #eee; padding: 5px; border-radius: 12px; border: 3px solid #000; }
+        .diff-opt { flex: 1; font-size: 10px; font-weight: 900; padding: 8px 2px; cursor: pointer; border-radius: 8px; border: 2px solid transparent; }
+        .diff-opt.active { background: #000; color: #fff; }
+
+        #lobby-list { text-align:left; padding:12px; background:#f9f9f9; border-radius:15px; margin:10px 0; border:4px solid #000; min-height: 80px; color: #000; overflow-y: auto; max-height: 150px; font-weight: bold; }
 
         #game { display: none; width: 100vw; height: 100vh; position: relative; }
         #map { width: 100%; height: calc(100% - 160px); position: absolute; top: 0; }
         
         .player { position: absolute; width: 28px; height: 28px; border: 3px solid #000; border-radius: 6px; z-index: 500; transition: 0.08s linear; }
-        .p-name { position: absolute; top: -22px; background: #000; color: #fff; padding: 1px 5px; font-size: 8px; border-radius: 4px; white-space: nowrap; left: 50%; transform: translateX(-50%); border: 1px solid #fff; }
+        .p-name { position: absolute; top: -22px; background: #000; color: #fff; padding: 1px 6px; font-size: 9px; border-radius: 4px; white-space: nowrap; left: 50%; transform: translateX(-50%); border: 2px solid #fff; }
 
-        .obs { position: absolute; width: 40px; height: 40px; border: 2px solid rgba(0,0,0,0.3); border-radius: 4px; box-sizing: border-box; }
+        .obs { position: absolute; width: 40px; height: 40px; border: 2px solid rgba(0,0,0,0.2); border-radius: 6px; box-sizing: border-box; }
         .goal { 
-            position: absolute; width: 60px; height: 60px; border: 4px dashed #fff; border-radius: 50%; 
+            position: absolute; width: 60px; height: 60px; border: 5px dashed #fff; border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; font-size: 14px; 
-            background: rgba(255,255,255,0.2); font-weight: 900; z-index: 400;
+            background: rgba(255,255,255,0.3); font-weight: 900; z-index: 400; color: #fff;
+            animation: rotate 4s linear infinite;
         }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         #hud { position: fixed; top: 10px; width: 100%; text-align: center; font-size: 16px; font-weight: 900; z-index: 2000; text-shadow: 2px 2px 0 #000; pointer-events: none; color: #fff; }
-        #waiting { position: fixed; top: 35%; width: 100%; text-align: center; font-size: 20px; font-weight: 900; color: gold; text-shadow: 2px 2px 0 #000; display: none; z-index: 2500; }
+        #waiting { position: fixed; top: 35%; width: 100%; text-align: center; font-size: 24px; font-weight: 900; color: var(--gold); text-shadow: 3px 3px 0 #000; display: none; z-index: 2500; }
 
         #bottom-bar {
             position: fixed; bottom: 0; width: 100%; height: 160px; 
-            background: #000; border-top: 5px solid #fff;
+            background: #111; border-top: 6px solid #fff;
             display: flex; justify-content: center; align-items: center; z-index: 3000;
         }
 
-        #controls { display: grid; grid-template-columns: repeat(3, 60px); gap: 8px; }
+        #controls { display: grid; grid-template-columns: repeat(3, 65px); gap: 10px; }
         .c-btn { 
-            width: 60px; height: 60px; background: rgba(255, 255, 255, 0.1); 
-            border: 3px solid #fff; border-radius: 12px; font-size: 24px; 
+            width: 65px; height: 65px; background: #222; 
+            border: 4px solid #fff; border-radius: 18px; font-size: 28px; 
             display: flex; justify-content: center; align-items: center; color: #fff; 
-            font-weight: bold;
         }
-        .c-btn:active { background: #fff; color: #000; transform: scale(0.9); }
+        .c-btn:active { background: #fff; color: #000; }
 
-        #win-screen { display: none; background: gold; z-index: 5000; }
+        #win-screen { display: none; background: var(--gold); z-index: 5000; }
     </style>
 </head>
 <body>
@@ -81,53 +88,52 @@
 <div id="screen-start" class="screen">
     <div class="card">
         <h1>MAZE MADNESS</h1>
-        <input id="nick" placeholder="JMENO" maxlength="10">
-        <button class="btn" onclick="hostHru()">ZALOZIT HRU</button>
-        <div style="margin: 10px 0; border-top: 3px solid #000;"></div>
-        <input id="room-input" placeholder="KOD">
-        <button class="btn" style="background:var(--accent); color:#000;" onclick="pripojHru()">PRIPOJIT SE</button>
+        <input id="nick" placeholder="TVOJE JMÉNO" maxlength="10">
+        <div class="diff-box" id="diff-selector">
+            <div class="diff-opt active" onclick="setDiff('easy', 10)">EASY</div>
+            <div class="diff-opt" onclick="setDiff('hard', 15)">HARD</div>
+            <div class="diff-opt" onclick="setDiff('extrem', 30)">EXTREM</div>
+        </div>
+        <button class="btn" onclick="hostHru()">ZALOŽIT HRU</button>
+        <div style="margin: 15px 0; border-top: 4px solid #000;"></div>
+        <input id="room-input" placeholder="KÓD POKOJE">
+        <button class="btn" style="background:var(--accent); color:#000;" onclick="pripojHru()">PØIPOJIT SE</button>
     </div>
 </div>
 
 <div id="screen-lobby" class="screen" style="display:none">
     <div class="card">
-        <h2>KOD: <span id="display-code" style="color:var(--p)">----</span></h2>
+        <h2>KÓD: <span id="display-code" style="color:var(--p)">----</span></h2>
         <div id="lobby-list"></div>
+        <div id="lobby-info" style="font-size:11px; margin-bottom:10px; font-weight:bold;">MÓD: <span id="mode-text">EASY</span></div>
         <button id="start-btn" class="btn" style="display:none" onclick="odstartovat()">START HRY</button>
-        <p style="color:#000; font-size:12px; font-weight:bold;">CEKEJ NA OSTATNI...</p>
+        <p style="color:#666; font-size:11px; font-weight:bold;">ÈEKÁNÍ NA HRÁÈE...</p>
     </div>
 </div>
 
 <div id="win-screen" class="screen">
     <div class="card">
-        <h1>VITEZ!</h1>
-        <button class="btn" onclick="location.reload()">MENU</button>
+        <h1 style="font-size:40px">? VÍTÌZ ?</h1>
+        <p>DOKONÈIL JSI CELOU VÝZVU!</p>
+        <button class="btn" onclick="location.reload()">DO MENU</button>
     </div>
 </div>
 
 <div id="game">
-    <div id="hud"><span id="biom-name">MAPA</span> | LVL: <span id="lvl">1</span>/10</div>
-    <div id="waiting">CEKAS NA OSTATNI...</div>
+    <div id="hud"><span id="biom-name">MAPA</span> | LVL: <span id="lvl">1</span> / <span id="max-lvl">10</span></div>
+    <div id="waiting">ÈEKÁŠ NA OSTATNÍ...</div>
     <div id="map"></div>
     <div id="bottom-bar">
         <div id="controls">
             <div></div><button class="c-btn" onpointerdown="pohyb('u')">^</button><div></div>
-            <button class="c-btn" onpointerdown="pohyb('l')"><</button>
-            <button class="c-btn" onpointerdown="pohyb('d')">v</button>
-            <button class="c-btn" onpointerdown="pohyb('r')">></button>
+            <button class="c-btn" onpointerdown="pohyb('l')">?</button>
+            <button class="c-btn" onpointerdown="pohyb('d')">¡</button>
+            <button class="c-btn" onpointerdown="pohyb('r')">?</button>
         </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-let lastTap = 0;
-document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTap < 300) e.preventDefault();
-    lastTap = now;
-}, false);
-
 const firebaseConfig = { databaseURL: "https://mejdrixgame-default-rtdb.firebaseio.com/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -136,36 +142,51 @@ let mujId = "u" + Math.floor(Math.random() * 9999);
 let mojeBarva = `hsl(${Math.random() * 360}, 85%, 60%)`;
 let mojeJmeno = "", mojeMisto = "", jeHost = false, aktualniLevel = 1, hotov = false;
 let mojePos = { x: 30, y: 30 };
+let obtiznost = "easy", maxLevelu = 10;
 
 const mapy = [
-    { n: "OCEAN", bg: "#004466", ob: "#0088cc" },
+    { n: "OCEÁN", bg: "#004466", ob: "#0088cc" },
     { n: "LES", bg: "#2d5a27", ob: "#4CAF50" },
     { n: "ANTARKTIDA", bg: "#a5f2f3", ob: "#ffffff" },
     { n: "VOLCANO", bg: "#4a0000", ob: "#ff4400" },
-    { n: "POUST", bg: "#d2b48c", ob: "#8b4513" },
-    { n: "KYBERPROSTOR", bg: "#1a1a2e", ob: "#00ff88" } // NOVÁ MAPA
+    { n: "POUŠ", bg: "#d2b48c", ob: "#8b4513" },
+    { n: "KYBERPROSTOR", bg: "#1a1a2e", ob: "#00ff88", neon: true },
+    { n: "VESMÍR", bg: "#000022", ob: "#7f00ff", neon: true },
+    { n: "PEKLO", bg: "#1a0000", ob: "#cc0000", neon: true }
 ];
 
+function setDiff(d, m) {
+    obtiznost = d; maxLevelu = m;
+    document.querySelectorAll('.diff-opt').forEach(o => o.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
 async function hostHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hrac";
+    mojeJmeno = document.getElementById('nick').value || "Hráè";
     mojeMisto = Math.floor(1000 + Math.random() * 9000).toString();
     jeHost = true;
-    await db.ref('rooms/' + mojeMisto).set({ status: 'lobby', level: 1 });
+    await db.ref('rooms/' + mojeMisto).set({ status: 'lobby', level: 1, mode: obtiznost, maxLvl: maxLevelu });
     vstoupitDoLobby();
 }
 
 async function pripojHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hrac";
+    mojeJmeno = document.getElementById('nick').value || "Hráè";
     mojeMisto = document.getElementById('room-input').value;
     if(!mojeMisto) return;
     const snap = await db.ref('rooms/' + mojeMisto).once('value');
-    if(snap.exists()) vstoupitDoLobby();
+    if(snap.exists()) {
+        let rd = snap.val();
+        obtiznost = rd.mode;
+        maxLevelu = rd.maxLvl;
+        vstoupitDoLobby();
+    }
 }
 
 function vstoupitDoLobby() {
     document.getElementById('screen-start').style.display = 'none';
     document.getElementById('screen-lobby').style.display = 'flex';
     document.getElementById('display-code').innerText = mojeMisto;
+    document.getElementById('mode-text').innerText = obtiznost.toUpperCase() + " (" + maxLevelu + " LVL)";
     if(jeHost) document.getElementById('start-btn').style.display = 'block';
 
     db.ref('rooms/'+mojeMisto+'/players/'+mujId).set({ name: mojeJmeno, x: 30, y: 30, color: mojeBarva, finish: false });
@@ -174,28 +195,24 @@ function vstoupitDoLobby() {
     db.ref('rooms/'+mojeMisto+'/players').on('value', snap => {
         const list = document.getElementById('lobby-list'); list.innerHTML = "";
         let allDone = true, count = 0;
-        
         snap.forEach(p => {
             count++;
-            let pData = p.val();
-            list.innerHTML += `<div style="font-size:14px;color:#000">${pData.finish ? '?' : '?'} ${pData.name}</div>`;
-            if(!pData.finish) allDone = false;
+            let pd = p.val();
+            list.innerHTML += `<div style="margin-bottom:5px">${pd.finish ? '?' : '?'} ${pd.name}</div>`;
+            if(!pd.finish) allDone = false;
         });
 
-        // PØECHOD NA DALŠÍ LEVEL JEN KDYŽ JSOU VŠICHNI V CÍLI
         if(jeHost && allDone && count > 0) {
-            db.ref('rooms/'+mojeMisto+'/status').once('value', sSnap => {
-                if(sSnap.val() === 'go') {
-                    if(aktualniLevel < 10) {
+            db.ref('rooms/'+mojeMisto+'/status').once('value', s => {
+                if(s.val() === 'go') {
+                    if(aktualniLevel < maxLevelu) {
                         setTimeout(() => {
-                            let updates = {};
-                            snap.forEach(p => { updates['players/'+p.key+'/finish'] = false; });
-                            updates['level'] = aktualniLevel + 1;
-                            db.ref('rooms/'+mojeMisto).update(updates);
-                        }, 1500);
-                    } else {
-                        db.ref('rooms/'+mojeMisto).update({ status: 'winner' });
-                    }
+                            let up = {};
+                            snap.forEach(p => { up['players/'+p.key+'/finish'] = false; });
+                            up['level'] = aktualniLevel + 1;
+                            db.ref('rooms/'+mojeMisto).update(up);
+                        }, 1200);
+                    } else { db.ref('rooms/'+mojeMisto).update({ status: 'winner' }); }
                 }
             });
         }
@@ -215,6 +232,7 @@ function odstartovat() { db.ref('rooms/'+mojeMisto).update({ status: 'go' }); }
 function spustitHru() {
     document.getElementById('screen-lobby').style.display = 'none';
     document.getElementById('game').style.display = 'block';
+    document.getElementById('max-lvl').innerText = maxLevelu;
     db.ref('rooms/'+mojeMisto+'/level').on('value', snap => { 
         if(snap.val()) { aktualniLevel = snap.val(); resetLevelu(); }
     });
@@ -236,17 +254,21 @@ function resetLevelu() {
     const cols = Math.floor(window.innerWidth / size);
     const rows = Math.floor((window.innerHeight - 160) / size);
     
-    const obt = 0.2 + (aktualniLevel * 0.04);
+    // Dynamická obtížnost podle módu
+    let baseObt = 0.15;
+    if(obtiznost == "hard") baseObt = 0.22;
+    if(obtiznost == "extrem") baseObt = 0.28;
+    const obt = baseObt + (aktualniLevel * 0.005);
 
     for(let r=0; r<rows; r++) {
         for(let c=0; c<cols; c++) {
-            if(r < 3 && c < 3) continue;
-            if(r > rows-3 && c > cols-3) continue;
+            // BEZPEÈNÉ ZÓNY (Start a Cíl + okolí, aby nebyla cesta zavøená)
+            if((r < 2 && c < 2) || (r > rows-3 && c > cols-3)) continue;
+            // Omezení zátaras - šance na blok je nižší, pokud jsou sousedi bloky
             if(Math.random() < obt) {
                 let o = document.createElement('div');
                 o.className = 'obs'; o.style.background = m.ob;
-                // Pøidání efektu pro KYBERPROSTOR
-                if(m.n === "KYBERPROSTOR") o.style.boxShadow = "0 0 10px " + m.ob;
+                if(m.neon) o.style.boxShadow = "0 0 10px " + m.ob;
                 o.style.left = c * size + "px"; o.style.top = r * size + "px";
                 map.appendChild(o);
             }
@@ -254,7 +276,7 @@ function resetLevelu() {
     }
     
     let g = document.createElement('div'); 
-    g.className = 'goal'; g.innerHTML = "CIL"; 
+    g.className = 'goal'; g.innerHTML = "CÍL"; 
     g.style.left = (cols - 2) * size + "px";
     g.style.top = (rows - 2) * size + "px";
     map.appendChild(g);
@@ -277,7 +299,6 @@ function pohyb(s) {
     if(hit) { mojePos = {x:25, y:25}; return; } 
 
     mojePos.x = nx; mojePos.y = ny;
-    
     const goal = document.querySelector('.goal');
     let gx = parseInt(goal.style.left), gy = parseInt(goal.style.top);
     if(nx < gx+60 && nx+28 > gx && ny < gy+60 && ny+28 > gy) {
@@ -294,8 +315,7 @@ function vykreslitHrace(hraci) {
         let d = document.createElement('div');
         d.className = 'player'; d.style.background = p.color;
         d.style.left = p.x + "px"; d.style.top = p.y + "px";
-        // Pokud je hráè v cíli, zprùhledníme ho
-        if(p.finish) d.style.opacity = "0.4";
+        if(p.finish) d.style.opacity = "0.3";
         d.innerHTML = `<div class="p-name">${p.name} ${p.finish?'?':''}</div>`;
         document.getElementById('map').appendChild(d);
     }
