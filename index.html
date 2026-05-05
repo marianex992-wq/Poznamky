@@ -15,7 +15,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: none; user-select: none; }
         body { margin: 0; font-family: var(--font-ui); background: var(--bg); overflow: hidden; position: fixed; width: 100%; height: 100%; color: #fff; }
 
-        /* --- 3D GRID POZADÕ --- */
+        /* --- 3D GRID POZAD√ç --- */
         body::before {
             content: ''; position: absolute; inset: -100px;
             background-image: linear-gradient(rgba(255, 255, 255, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 2px, transparent 2px);
@@ -64,7 +64,7 @@
 <body>
 
 <div class="top-ui">
-    <div class="wallet-ui">?? <span id="coin-val">0</span></div>
+    <div class="wallet-ui">ü™ô <span id="coin-val">0</span></div>
     <button class="btn btn-sec" style="width:auto; padding:10px 20px; margin:0;" onclick="openShop()">SHOP</button>
 </div>
 
@@ -72,15 +72,15 @@
     <div class="card">
         <h1>MAZE MADNESS</h1>
         <div class="subtitle">MULTIPLAYER LABYRINT</div>
-        <input id="nick" placeholder="PÿEZDÕVKA" maxlength="10">
+        <input id="nick" placeholder="P≈òEZD√çVKA" maxlength="10">
         <div class="diff-box">
             <div class="diff-opt active" id="d-easy" onclick="setDiff('easy', 10, this)">EASY</div>
             <div class="diff-opt" id="d-hard" onclick="setDiff('hard', 15, this)">HARD</div>
             <div class="diff-opt" id="d-extr" onclick="setDiff('extrem', 30, this)">EXTREM</div>
         </div>
-        <button class="btn" onclick="hostHru()">VYTVOÿIT HRU</button>
-        <input id="room-input" placeholder="K”D POKOJE">
-        <button class="btn btn-accent" onclick="pripojHru()">PÿIPOJIT SE</button>
+        <button class="btn" onclick="hostHru()">VYTVO≈òIT HRU</button>
+        <input id="room-input" placeholder="K√ìD POKOJE">
+        <button class="btn btn-accent" onclick="pripojHru()">P≈òIPOJIT SE</button>
     </div>
 </div>
 
@@ -96,12 +96,12 @@
     <div class="card">
         <h1>SHOP</h1>
         <div class="shop-grid">
-            <div class="shop-item selected" onclick="buySkin('default', 0)">Z¡KLADNÕ</div>
+            <div class="shop-item selected" onclick="buySkin('default', 0)">Z√ÅKLADN√ç</div>
             <div class="shop-item" onclick="buySkin('neon', 50)">NEON (50)</div>
             <div class="shop-item" onclick="buySkin('gold', 100)">GOLD (100)</div>
             <div class="shop-item" onclick="buySkin('rainbow', 250)">RAINBOW (250)</div>
         </div>
-        <button class="btn btn-sec" onclick="closeShop()">ZPÃT</button>
+        <button class="btn btn-sec" onclick="closeShop()">ZPƒöT</button>
     </div>
 </div>
 
@@ -109,10 +109,10 @@
     <div id="map"></div>
     <div id="bottom-bar">
         <div id="controls">
-            <div></div><button class="c-btn" onpointerdown="pohyb('u')">^</button><div></div>
-            <button class="c-btn" onpointerdown="pohyb('l')">?</button>
-            <button class="c-btn" onpointerdown="pohyb('d')">°</button>
-            <button class="c-btn" onpointerdown="pohyb('r')">?</button>
+            <div></div><button class="c-btn" onpointerdown="pohyb('u')">‚ñ≤</button><div></div>
+            <button class="c-btn" onpointerdown="pohyb('l')">‚óÄ</button>
+            <button class="c-btn" onpointerdown="pohyb('d')">‚ñº</button>
+            <button class="c-btn" onpointerdown="pohyb('r')">‚ñ∂</button>
         </div>
     </div>
 </div>
@@ -140,11 +140,11 @@ function openShop() { document.getElementById('screen-start').style.display='non
 function closeShop() { document.getElementById('screen-shop').style.display='none'; document.getElementById('screen-start').style.display='flex'; }
 
 function buySkin(name, price) {
-    if(coins >= price) { activeSkin = name; localStorage.setItem('mm_skin', name); alert("Skin vybr·n!"); }
+    if(coins >= price) { activeSkin = name; localStorage.setItem('mm_skin', name); alert("Skin vybr√°n!"); }
 }
 
 async function hostHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
+    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
     mojeMisto = Math.floor(1000 + Math.random() * 9000).toString();
     jeHost = true;
     await db.ref('rooms/' + mojeMisto).set({ status: 'lobby', level: 1, mode: obtiznost, maxLvl: maxLevelu });
@@ -152,7 +152,7 @@ async function hostHru() {
 }
 
 async function pripojHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
+    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
     mojeMisto = document.getElementById('room-input').value;
     if(!mojeMisto) return;
     vstoupitDoLobby();
@@ -167,7 +167,7 @@ function vstoupitDoLobby() {
     db.ref('rooms/'+mojeMisto+'/players/'+mujId).set({ name: mojeJmeno, x: 30, y: 30, skin: activeSkin, finish: false });
     db.ref('rooms/'+mojeMisto+'/players').on('value', snap => {
         const list = document.getElementById('lobby-list'); list.innerHTML = "";
-        snap.forEach(p => { list.innerHTML += `<div>ï ${p.val().name}</div>`; });
+        snap.forEach(p => { list.innerHTML += `<div>‚Ä¢ ${p.val().name}</div>`; });
     });
     db.ref('rooms/'+mojeMisto+'/status').on('value', snap => { if(snap.val() === 'go') spustitHru(); });
 }
