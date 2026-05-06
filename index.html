@@ -27,7 +27,7 @@
         #game { display: none; width: 100vw; height: 100vh; position: relative; }
         #map { width: 100%; height: 100%; position: absolute; }
 
-        /* STYLOV√â KOSTKY (ZDI) */
+        /* STYLOV… KOSTKY (ZDI) */
         .obs { 
             position: absolute; 
             border-radius: 6px; 
@@ -39,11 +39,11 @@
         .ocean-fx { background: url('https://www.transparenttextures.com/patterns/cubes.png'); animation: wave 10s infinite linear; }
         @keyframes wave { from { background-position: 0 0; } to { background-position: 100px 100px; } }
 
-        /* HR√ÅƒåI */
+        /* HR¡»I */
         .player { position: absolute; width: 35px; height: 35px; border-radius: 10px; border: 3px solid #fff; z-index: 100; transition: 0.1s linear; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .p-name { position: absolute; top: -28px; font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* C√çL */
+        /* CÕL */
         .goal { position: absolute; width: 80px; height: 80px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 50px var(--gold); display: flex; align-items: center; justify-content: center; color: #000; font-family: 'Bungee'; animation: pulse 1s infinite alternate; z-index: 50; }
         @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.2); opacity: 1; } }
 
@@ -51,7 +51,7 @@
         .hud { position: fixed; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 4000; pointer-events: none; }
         .stat { background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; border: 2px solid var(--accent); font-family: 'Bungee'; font-size: 1.2rem; }
 
-        /* OVL√ÅD√ÅN√ç */
+        /* OVL¡D¡NÕ */
         #controls { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: grid; grid-template-columns: repeat(3, 80px); gap: 15px; z-index: 4500; }
         .c-btn { width: 80px; height: 80px; background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: 2px solid #fff; border-radius: 25px; color: #fff; font-size: 30px; }
     </style>
@@ -59,34 +59,34 @@
 <body>
 
 <div class="hud">
-    <div class="stat" style="color: var(--gold);">üí∞ <span id="coins">0</span></div>
-    <div id="biom-name" class="stat" style="color: var(--accent);">ƒåEK√ÅM...</div>
+    <div class="stat" style="color: var(--gold);">?? <span id="coins">0</span></div>
+    <div id="biom-name" class="stat" style="color: var(--accent);">»EK¡M...</div>
 </div>
 
 <div id="screen-start" class="screen">
     <div class="card">
         <h1>MAZE MADNESS</h1>
-        <input id="nick" placeholder="TVOJE P≈òEZD√çVKA" maxlength="12">
-        <button class="btn btn-main" onclick="start(true)">VYTVO≈òIT SERVER (7 MAP)</button>
-        <div style="margin: 15px; opacity: 0.3;">‚Äî‚Äî‚Äî NEBO ‚Äî‚Äî‚Äî</div>
-        <input id="room-id" placeholder="K√ìD SERVERU">
-        <button class="btn btn-acc" onclick="start(false)">P≈òIPOJIT SE</button>
-        <button class="btn" style="background: #222;" onclick="alert('Shop se otev√≠r√°...')">SHOP</button>
+        <input id="nick" placeholder="TVOJE PÿEZDÕVKA" maxlength="12">
+        <button class="btn btn-main" onclick="start(true)">VYTVOÿIT SERVER (7 MAP)</button>
+        <div style="margin: 15px; opacity: 0.3;">óóó NEBO óóó</div>
+        <input id="room-id" placeholder="K”D SERVERU">
+        <button class="btn btn-acc" onclick="start(false)">PÿIPOJIT SE</button>
+        <button class="btn" style="background: #222;" onclick="alert('Shop se otevÌr·...')">SHOP</button>
     </div>
 </div>
 
 <div id="game">
     <div id="map"></div>
     <div id="controls">
-        <div></div><button class="c-btn" onpointerdown="move('u')">‚ñ≤</button><div></div>
-        <button class="c-btn" onpointerdown="move('l')">‚óÄ</button>
-        <button class="c-btn" onpointerdown="move('d')">‚ñº</button>
-        <button class="c-btn" onpointerdown="move('r')">‚ñ∂</button>
+        <div></div><button class="c-btn" onpointerdown="move('u')">^</button><div></div>
+        <button class="c-btn" onpointerdown="move('l')">?</button>
+        <button class="c-btn" onpointerdown="move('d')">°</button>
+        <button class="c-btn" onpointerdown="move('r')">?</button>
     </div>
 </div>
 
 <script>
-// --- KONFIGURACE (Pou≈æij sv≈Øj Firebase) ---
+// --- KONFIGURACE (Pouûij sv˘j Firebase) ---
 const firebaseConfig = { databaseURL: "https://mejdrixgame-default-rtdb.firebaseio.com/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -96,19 +96,19 @@ let myPos = { x: 100, y: 100 };
 let roomId = "";
 let isFinished = false;
 
-// --- 7 BIOM≈Æ S DETAILY ---
+// --- 7 BIOMŸ S DETAILY ---
 const biomes = [
-    { n: "OCE√ÅN", bg: "#004466", wall: "#0088cc", fx: "ocean-fx" },
-    { n: "POU≈†≈§", bg: "#edc9af", wall: "#c29a6b", fx: "" },
-    { n: "TEMN√ù LES", bg: "#0a2e0a", wall: "#1b4d1b", fx: "" },
+    { n: "OCE¡N", bg: "#004466", wall: "#0088cc", fx: "ocean-fx" },
+    { n: "POUäç", bg: "#edc9af", wall: "#c29a6b", fx: "" },
+    { n: "TEMN› LES", bg: "#0a2e0a", wall: "#1b4d1b", fx: "" },
     { n: "PEKLO", bg: "#330000", wall: "#ff4400", fx: "" },
-    { n: "VESM√çR", bg: "#050505", wall: "#333344", fx: "" },
-    { n: "MƒöSTO", bg: "#222", wall: "#555", fx: "" },
-    { n: "LEDOP√ÅD", bg: "#e0ffff", wall: "#00ffff", fx: "" }
+    { n: "VESMÕR", bg: "#050505", wall: "#333344", fx: "" },
+    { n: "MÃSTO", bg: "#222", wall: "#555", fx: "" },
+    { n: "LEDOP¡D", bg: "#e0ffff", wall: "#00ffff", fx: "" }
 ];
 
 async function start(isHost) {
-    let nick = document.getElementById('nick').value || "Hr√°ƒç";
+    let nick = document.getElementById('nick').value || "Hr·Ë";
     roomId = isHost ? Math.floor(1000+Math.random()*8999).toString() : document.getElementById('room-id').value;
     
     if(isHost) {
@@ -134,7 +134,7 @@ function buildMap(data) {
     m.className = biom.fx;
     m.innerHTML = "";
 
-    // Generov√°n√≠ 3D kostek s obrysem
+    // Generov·nÌ 3D kostek s obrysem
     for(let i=0; i<40; i++) {
         let b = document.createElement('div');
         b.className = 'obs';
@@ -146,10 +146,10 @@ function buildMap(data) {
         m.appendChild(b);
     }
 
-    // C√≠l
+    // CÌl
     let g = document.createElement('div');
     g.className = 'goal';
-    g.innerHTML = "C√çL";
+    g.innerHTML = "CÕL";
     g.style.left = (window.innerWidth - 120) + "px";
     g.style.top = (window.innerHeight - 250) + "px";
     m.appendChild(g);
@@ -168,7 +168,7 @@ function move(dir) {
 
     if(myPos.x > window.innerWidth-150 && myPos.y > window.innerHeight-300) {
         isFinished = true;
-        alert("MAPA DOKONƒåENA!");
+        alert("MAPA DOKON»ENA!");
         location.reload();
     }
 }
@@ -182,7 +182,7 @@ function drawPlayers(snap) {
         div.className = 'player';
         div.style.left = p.x + "px"; div.style.top = p.y + "px";
         div.style.background = (id === myId) ? 'var(--accent)' : 'var(--p)';
-        div.innerHTML = `<div class="p-name">${p.n}</div>üòé`;
+        div.innerHTML = `<div class="p-name">${p.n}</div>??`;
         document.getElementById('map').appendChild(div);
     }
 }
