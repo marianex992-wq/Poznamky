@@ -9,10 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --p: #fe2c55; /* Neonov· R˘ûov· */
-            --accent: #25F4EE; /* Neonov· Tyrkysov· */
+            --p: #fe2c55; /* Neonov√° R≈Ø≈æov√° */
+            --accent: #25F4EE; /* Neonov√° Tyrkysov√° */
             --gold: #FFD700; 
-            --bg: #05050a; /* »ernomodrÈ pozadÌ */
+            --bg: #05050a; /* ƒåernomodr√© pozad√≠ */
             --font-game: 'Oswald', sans-serif;
             --font-ui: 'Montserrat', sans-serif;
         }
@@ -38,7 +38,7 @@
             align-items: center;
         }
 
-        /* --- ANIMOVAN… 3D GRID POZADÕ (LOBBY Ué NENÕ PR¡ZDN…) --- */
+        /* --- ANIMOVAN√â 3D GRID POZAD√ç (LOBBY U≈Ω NEN√ç PR√ÅZDN√â) --- */
         .bg-animation {
             position: absolute;
             inset: -100px;
@@ -70,7 +70,7 @@
             background: radial-gradient(circle at center, transparent 0%, rgba(5,5,10,0.8) 100%);
         }
         
-        /* --- GLASSMORPHISM KARTA (ROZTAéENÃJäÕ A HEZ»Õ) --- */
+        /* --- GLASSMORPHISM KARTA (ROZTA≈ΩENƒöJ≈†√ç A HEZƒå√ç) --- */
         .card { 
             background: rgba(255, 255, 255, 0.03); 
             backdrop-filter: blur(20px); 
@@ -137,7 +137,7 @@
         .btn-sec { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; color: #fff; }
         .btn-accent { background: var(--accent); color: #000; box-shadow: 0 10px 25px rgba(37,244,238,0.4); }
 
-        /* OBTÕéNOST BOX */
+        /* OBT√ç≈ΩNOST BOX */
         .diff-box { display: flex; gap: 10px; margin: 15px 0; }
         .diff-opt { 
             flex: 1; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 15px; 
@@ -151,7 +151,7 @@
         .player-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .player-ready { color: var(--accent); font-weight: 900; text-shadow: 0 0 10px var(--accent); }
 
-        /* PENÃéENKA A SHOP V ROHECH */
+        /* PENƒö≈ΩENKA A SHOP V ROHECH */
         .top-ui { position: fixed; top: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; align-items: center; z-index: 5000; }
         .wallet-ui { 
             background: rgba(0,0,0,0.8); 
@@ -186,7 +186,7 @@
 <div class="bg-animation"></div>
 
 <div class="top-ui">
-    <div class="wallet-ui">?? <span id="coin-val">0</span></div>
+    <div class="wallet-ui">üí∞ <span id="coin-val">0</span></div>
     <button class="btn btn-sec" id="shop-btn-lobby" onclick="openShop()" style="width:auto; margin:0; padding:10px 25px; border-radius:50px; font-size:14px; border:2px solid var(--accent); color:var(--accent)">SHOP</button>
 </div>
 
@@ -195,7 +195,7 @@
         <h1>MAZE MADNESS</h1>
         <div class="subtitle">MULTIPLAYER LABYRINT</div>
         
-        <input id="nick" placeholder="TVOJE PÿEZDÕVKA" maxlength="10">
+        <input id="nick" placeholder="TVOJE P≈òEZD√çVKA" maxlength="10">
         
         <div class="diff-box">
             <div class="diff-opt active" onclick="setDiff('easy', 10, this)">EASY</div>
@@ -203,21 +203,21 @@
             <div class="diff-opt" onclick="setDiff('extrem', 30, this)">EXTREM</div>
         </div>
         
-        <button class="btn" onclick="hostHru()">VYTVOÿIT HRU</button>
+        <button class="btn" onclick="hostHru()">VYTVO≈òIT HRU</button>
         <div style="margin: 20px 0; height: 1px; background: rgba(255,255,255,0.1);"></div>
-        <input id="room-input" placeholder="K”D POKOJE">
-        <button class="btn btn-accent" onclick="pripojHru()">PÿIPOJIT SE</button>
+        <input id="room-input" placeholder="K√ìD POKOJE">
+        <button class="btn btn-accent" onclick="pripojHru()">P≈òIPOJIT SE</button>
     </div>
 </div>
 
 <div id="screen-lobby" class="screen" style="display:none">
     <div class="card">
-        <div style="font-size:11px; opacity:0.5; letter-spacing:2px;">K”D POKOJE</div>
+        <div style="font-size:11px; opacity:0.5; letter-spacing:2px;">K√ìD POKOJE</div>
         <div id="display-code" style="font-size:50px; font-weight:900; color:var(--accent); margin-bottom:15px;">----</div>
         <div id="lobby-list"></div>
-        <div style="margin-bottom:20px; font-weight:bold; text-transform:uppercase;">M”D: <span id="mode-text" style="color:var(--p)">EASY</span></div>
-        <button id="start-btn" class="btn" style="display:none" onclick="odstartovat()">ODSTARTOVAT Z¡PAS</button>
-        <p id="wait-msg">»EK¡ME NA HOSTITELE...</p>
+        <div style="margin-bottom:20px; font-weight:bold; text-transform:uppercase;">M√ìD: <span id="mode-text" style="color:var(--p)">EASY</span></div>
+        <button id="start-btn" class="btn" style="display:none" onclick="odstartovat()">ODSTARTOVAT Z√ÅPAS</button>
+        <p id="wait-msg">ƒåEK√ÅME NA HOSTITELE...</p>
     </div>
 </div>
 
@@ -225,39 +225,39 @@
     <div class="card">
         <h1>SKIN SHOP</h1>
         <div class="shop-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div class="shop-item owned selected" onclick="buySkin('default', 0)" style="padding:15px; background:rgba(255,255,255,0.05); border-radius:20px; border:2px solid #fff">Z¡KLADNÕ</div>
+            <div class="shop-item owned selected" onclick="buySkin('default', 0)" style="padding:15px; background:rgba(255,255,255,0.05); border-radius:20px; border:2px solid #fff">Z√ÅKLADN√ç</div>
             <div class="shop-item" onclick="buySkin('neon', 50)" style="padding:15px; background:rgba(255,255,255,0.05); border-radius:20px;">NEON (50)</div>
             <div class="shop-item" onclick="buySkin('gold', 100)" style="padding:15px; background:rgba(255,255,255,0.05); border-radius:20px;">GOLD (100)</div>
             <div class="shop-item" onclick="buySkin('rainbow', 250)" style="padding:15px; background:rgba(255,255,255,0.05); border-radius:20px;">RAINBOW (250)</div>
         </div>
-        <button class="btn btn-sec" onclick="closeShop()">ZPÃT</button>
+        <button class="btn btn-sec" onclick="closeShop()">ZPƒöT</button>
     </div>
 </div>
 
 <div id="win-screen" class="screen" style="display:none">
     <div class="card">
         <h1 style="color:var(--gold);">MISTR!</h1>
-        <p>Hra dokonËena.</p>
+        <p>Hra dokonƒçena.</p>
         <button class="btn" onclick="location.reload()">MENU</button>
     </div>
 </div>
 
 <div id="game">
     <div id="hud"><span id="biom-name">MAPA</span> | LVL: <span id="lvl">1</span> / <span id="max-lvl">10</span></div>
-    <div id="waiting" style="position:fixed; top:40%; width:100%; text-align:center; font-size:30px; display:none; color:var(--gold); z-index:5000;">»EK¡NÕ...</div>
+    <div id="waiting" style="position:fixed; top:40%; width:100%; text-align:center; font-size:30px; display:none; color:var(--gold); z-index:5000;">ƒåEK√ÅN√ç...</div>
     <div id="map"></div>
     <div id="bottom-bar">
         <div id="controls">
-            <div></div><button class="c-btn" onpointerdown="pohyb('u')">^</button><div></div>
-            <button class="c-btn" onpointerdown="pohyb('l')">?</button>
-            <button class="c-btn" onpointerdown="pohyb('d')">°</button>
-            <button class="c-btn" onpointerdown="pohyb('r')">?</button>
+            <div></div><button class="c-btn" onpointerdown="pohyb('u')">‚ñ≤</button><div></div>
+            <button class="c-btn" onpointerdown="pohyb('l')">‚óÄ</button>
+            <button class="c-btn" onpointerdown="pohyb('d')">‚ñº</button>
+            <button class="c-btn" onpointerdown="pohyb('r')">‚ñ∂</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- VäECHNY TVOJE FUNKCE ZŸSTALY (JSOU JEN PÿIPOJENY NA NOV› VZHLED) ---
+// --- V≈†ECHNY TVOJE FUNKCE Z≈ÆSTALY (JSOU JEN P≈òIPOJENY NA NOV√ù VZHLED) ---
 const firebaseConfig = { databaseURL: "https://mejdrixgame-default-rtdb.firebaseio.com/" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -274,9 +274,9 @@ let activeSkin = localStorage.getItem('mm_active_skin') || 'default';
 document.getElementById('coin-val').innerText = coins;
 
 const mapy = [
-    { n: "OCE¡N", bg: "#001a2a", ob: "#25F4EE" },
+    { n: "OCE√ÅN", bg: "#001a2a", ob: "#25F4EE" },
     { n: "PEKLO", bg: "#1a0000", ob: "#fe2c55" },
-    { n: "POUäç", bg: "#2a1a00", ob: "#FFD700" }
+    { n: "POU≈†≈§", bg: "#2a1a00", ob: "#FFD700" }
 ];
 
 function setDiff(d, m, el) {
@@ -295,7 +295,7 @@ function closeShop() {
 }
 
 async function hostHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
+    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
     mojeMisto = Math.floor(1000 + Math.random() * 9000).toString();
     jeHost = true;
     await db.ref('rooms/' + mojeMisto).set({ status: 'lobby', level: 1, mode: obtiznost, maxLvl: maxLevelu });
@@ -303,7 +303,7 @@ async function hostHru() {
 }
 
 async function pripojHru() {
-    mojeJmeno = document.getElementById('nick').value || "Hr·Ë";
+    mojeJmeno = document.getElementById('nick').value || "Hr√°ƒç";
     mojeMisto = document.getElementById('room-input').value;
     if(!mojeMisto) return;
     const snap = await db.ref('rooms/' + mojeMisto).once('value');
@@ -328,7 +328,7 @@ function vstoupitDoLobby() {
         let allDone = true, count = 0;
         snap.forEach(p => {
             count++; let pd = p.val();
-            list.innerHTML += `<div class="player-row"><span>${pd.name}</span> <span class="${pd.finish?'player-ready':''}"> ${pd.finish?'HOTOVO':'»EK¡'}</span></div>`;
+            list.innerHTML += `<div class="player-row"><span>${pd.name}</span> <span class="${pd.finish?'player-ready':''}"> ${pd.finish?'HOTOVO':'ƒåEK√Å'}</span></div>`;
             if(!pd.finish) allDone = false;
         });
         if(jeHost && allDone && count > 0) {
@@ -371,7 +371,7 @@ function resetLevelu() {
     const map = document.getElementById('map'); map.innerHTML = "";
     mojePos = { x: 25, y: 25 };
     
-    // Generov·nÌ zdi (tv˘j algoritmus)
+    // Generov√°n√≠ zdi (tv≈Øj algoritmus)
     for(let i=0; i<40; i++) {
         let o = document.createElement('div'); o.className = 'obs';
         o.style.left = Math.random() * (window.innerWidth-40) + "px";
