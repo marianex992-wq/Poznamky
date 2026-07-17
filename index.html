@@ -2,190 +2,259 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MAZE MADNESS ULTIMATE</title>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Prémiový Plánovač Směn & Rozvrhu</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --p: #fe2c55; --accent: #25F4EE; --gold: #FFD700; }
-        * { box-sizing: border-box; touch-action: none; user-select: none; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-
-        /* LOBBY FULLSCREEN */
-        .screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 5000; background: radial-gradient(circle, #1a1a2e 0%, #000 100%); }
-        .card { width: 90%; max-width: 450px; background: rgba(20, 20, 30, 0.8); backdrop-filter: blur(15px); padding: 30px; border-radius: 40px; border: 2px solid rgba(255,255,255,0.1); text-align: center; }
-        
-        h1 { font-family: 'Bungee', cursive; font-size: 2.5rem; color: var(--p); text-shadow: 3px 3px 0px #000, 0 0 20px var(--p); margin: 0; transform: skew(-5deg); }
-        input { width: 100%; padding: 18px; margin: 10px 0; border-radius: 15px; border: 2px solid rgba(255,255,255,0.1); background: #000; color: #fff; text-align: center; font-size: 1rem; }
-        .btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-family: 'Bungee'; font-size: 1.1rem; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        .btn-main { background: var(--p); color: #fff; box-shadow: 0 5px 0 #b01d3b; }
-        .btn-acc { background: var(--accent); color: #000; box-shadow: 0 5px 0 #1abfb9; }
-        .btn:active { transform: translateY(3px); box-shadow: none; }
-
-        /* GAME AREA */
-        #game { display: none; width: 100vw; height: 100vh; position: relative; }
-        #map { width: 100%; height: 100%; position: absolute; }
-
-        /* STYLOV� KOSTKY (ZDI) */
-        .obs { 
-            position: absolute; 
-            border-radius: 6px; 
-            border: 3px solid rgba(0,0,0,0.3); 
-            box-shadow: inset 5px 5px 15px rgba(255,255,255,0.1), 5px 5px 10px rgba(0,0,0,0.5);
+        body {
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
         }
+        /* Styly pro buňky podle vybrané barvy */
+        .cell-gray { background: #334155 !important; color: #f8fafc !important; }
+        .cell-blue { background: #1e3a8a !important; color: #93c5fd !important; border-color: #3b82f6 !important; }
+        .cell-green { background: #064e3b !important; color: #6ee7b7 !important; border-color: #10b981 !important; }
+        .cell-yellow { background: #78350f !important; color: #fde047 !important; border-color: #eab308 !important; }
+        .cell-red { background: #7f1d1d !important; color: #fca5a5 !important; border-color: #ef4444 !important; }
 
-        /* BIOM DETAILY */
-        .ocean-fx { background: url('https://www.transparenttextures.com/patterns/cubes.png'); animation: wave 10s infinite linear; }
-        @keyframes wave { from { background-position: 0 0; } to { background-position: 100px 100px; } }
-
-        /* HR��I */
-        .player { position: absolute; width: 35px; height: 35px; border-radius: 10px; border: 3px solid #fff; z-index: 100; transition: 0.1s linear; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .p-name { position: absolute; top: -28px; font-size: 12px; font-weight: 900; background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 5px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.2); }
-
-        /* C�L */
-        .goal { position: absolute; width: 80px; height: 80px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 50px var(--gold); display: flex; align-items: center; justify-content: center; color: #000; font-family: 'Bungee'; animation: pulse 1s infinite alternate; z-index: 50; }
-        @keyframes pulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.2); opacity: 1; } }
-
-        /* HUD */
-        .hud { position: fixed; top: 20px; width: 100%; display: flex; justify-content: space-around; z-index: 4000; pointer-events: none; }
-        .stat { background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px; border: 2px solid var(--accent); font-family: 'Bungee'; font-size: 1.2rem; }
-
-        /* OVL�D�N� */
-        #controls { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); display: grid; grid-template-columns: repeat(3, 80px); gap: 15px; z-index: 4500; }
-        .c-btn { width: 80px; height: 80px; background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); border: 2px solid #fff; border-radius: 25px; color: #fff; font-size: 30px; }
+        /* Když je políčko uzamčené pro čtenáře */
+        .custom-table input:disabled {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            cursor: default;
+        }
+        .custom-table select:disabled {
+            display: none !important;
+        }
     </style>
 </head>
-<body>
+<body class="p-3 md:p-8 text-slate-100 font-sans antialiased">
 
-<div class="hud">
-    <div class="stat" style="color: var(--gold);">?? <span id="coins">0</span></div>
-    <div id="biom-name" class="stat" style="color: var(--accent);">�EK�M...</div>
-</div>
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <div class="flex flex-col lg:flex-row justify-between items-center bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-2xl gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-amber-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                    <i class="fa-solid fa-calendar-days text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-white tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Live Dashboard Směn</h1>
+                    <p class="text-xs text-slate-400 font-medium">Synchronizace v reálném čase • Chráněno šifrováním</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
+                <button id="saveAllBtn" class="hidden px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-emerald-900/30 items-center gap-2 cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit změny
+                </button>
 
-<div id="screen-start" class="screen">
-    <div class="card">
-        <h1>MAZE MADNESS</h1>
-        <input id="nick" placeholder="TVOJE P�EZD�VKA" maxlength="12">
-        <button class="btn btn-main" onclick="start(true)">VYTVO�IT SERVER (7 MAP)</button>
-        <div style="margin: 15px; opacity: 0.3;">��� NEBO ���</div>
-        <input id="room-id" placeholder="K�D SERVERU">
-        <button class="btn btn-acc" onclick="start(false)">P�IPOJIT SE</button>
-        <button class="btn" style="background: #222;" onclick="alert('Shop se otev�r�...')">SHOP</button>
+                <button id="adminBtn" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition-all duration-300 border border-slate-700 flex items-center gap-2 cursor-pointer shadow-md">
+                    <i class="fa-solid fa-lock" id="adminIcon"></i>
+                    <span id="adminText">Režim Čtení</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/60 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-800 p-4 md:p-6 overflow-x-auto">
+            <table class="w-full border-separate border-spacing-2 custom-table min-w-[1000px]">
+                <thead>
+                    <tr class="text-slate-400 text-sm">
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                            <input type="text" id="col0" disabled value="Pozice / Čas" class="w-full text-center bg-transparent font-black tracking-wider uppercase text-xs text-amber-500 focus:outline-none">
+                        </th>
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col1" disabled value="Sloupec 1" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col2" disabled value="Sloupec 2" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col3" disabled value="Sloupec 3" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col4" disabled value="Sloupec 4" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col5" disabled value="Sloupec 5" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-<div id="game">
-    <div id="map"></div>
-    <div id="controls">
-        <div></div><button class="c-btn" onpointerdown="move('u')">^</button><div></div>
-        <button class="c-btn" onpointerdown="move('l')">?</button>
-        <button class="c-btn" onpointerdown="move('d')">�</button>
-        <button class="c-btn" onpointerdown="move('r')">?</button>
-    </div>
-</div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<script>
-// --- KONFIGURACE (Pou�ij sv�j Firebase) ---
-const firebaseConfig = { databaseURL: "https://mejdrixgame-default-rtdb.firebaseio.com/" };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+        // Konfigurace s tvými údaji
+        const firebaseConfig = {
+            apiKey: "AIzaSyDl7LefJrniJ_4RbXmP6dTARNHyMkB0yFI",
+            authDomain: "kalendar-70f7a.firebaseapp.com",
+            projectId: "kalendar-70f7a",
+            storageBucket: "kalendar-70f7a.firebasestorage.app",
+            messagingSenderId: "63936026731",
+            appId: "1:63936026731:web:c3f4fbf4209c55ae24792e",
+            measurementId: "G-XWK3NBNNLG"
+        };
 
-let myId = "u" + Math.floor(Math.random()*9999);
-let myPos = { x: 100, y: 100 };
-let roomId = "";
-let isFinished = false;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-// --- 7 BIOM� S DETAILY ---
-const biomes = [
-    { n: "OCE�N", bg: "#004466", wall: "#0088cc", fx: "ocean-fx" },
-    { n: "POU��", bg: "#edc9af", wall: "#c29a6b", fx: "" },
-    { n: "TEMN� LES", bg: "#0a2e0a", wall: "#1b4d1b", fx: "" },
-    { n: "PEKLO", bg: "#330000", wall: "#ff4400", fx: "" },
-    { n: "VESM�R", bg: "#050505", wall: "#333344", fx: "" },
-    { n: "M�STO", bg: "#222", wall: "#555", fx: "" },
-    { n: "LEDOP�D", bg: "#e0ffff", wall: "#00ffff", fx: "" }
-];
+        let isAdmin = false;
+        const ADMIN_PIN = "140514"; // Tvůj nový bezpečný kód
+        const TOTAL_ROWS = 12;      // Celkem 12 plně nastavitelných řádků
 
-async function start(isHost) {
-    let nick = document.getElementById('nick').value || "Hr��";
-    roomId = isHost ? Math.floor(1000+Math.random()*8999).toString() : document.getElementById('room-id').value;
-    
-    if(isHost) {
-        await db.ref('rooms/'+roomId).set({
-            biom: Math.floor(Math.random()*biomes.length),
-            seed: Math.random()
+        const adminBtn = document.getElementById('adminBtn');
+        const adminIcon = document.getElementById('adminIcon');
+        const adminText = document.getElementById('adminText');
+        const saveAllBtn = document.getElementById('saveAllBtn');
+        const tableBody = document.getElementById('tableBody');
+
+        // Dynamické sestavení řádků tabulky
+        for (let r = 1; r <= TOTAL_ROWS; r++) {
+            const tr = document.createElement('tr');
+            
+            // Sloupec 0: Názvy řádků (predefinované, ale plně editovatelné adminem)
+            const tdLabel = document.createElement('td');
+            tdLabel.className = "p-1 bg-slate-950/20 rounded-xl border border-slate-800";
+            const rowInput = document.createElement('input');
+            rowInput.type = "text";
+            rowInput.id = `rowlabel-${r}`;
+            rowInput.disabled = true;
+            rowInput.value = `Řádek ${r}`;
+            rowInput.className = "w-full p-2.5 text-sm font-semibold text-slate-400 bg-transparent text-center focus:outline-none";
+            tdLabel.appendChild(rowInput);
+            tr.appendChild(tdLabel);
+
+            // Sloupce 1 až 5 (obsah + výběr barvy)
+            for (let c = 1; c <= 5; c++) {
+                const td = document.createElement('td');
+                td.className = "p-1 bg-slate-800/40 rounded-xl border border-slate-700/50 transition-all duration-200 relative group";
+                td.id = `td-${r}-${c}`;
+                
+                // Hlavní textové pole buňky
+                const input = document.createElement('input');
+                input.type = "text";
+                input.id = `cell-${r}-${c}`;
+                input.disabled = true;
+                input.placeholder = "-";
+                input.className = "w-full p-2.5 text-sm font-medium bg-transparent text-center focus:outline-none rounded-lg transition-all";
+                
+                // Výběr barvy buňky (zobrazí se pouze adminovi)
+                const selectColor = document.createElement('select');
+                selectColor.id = `color-${r}-${c}`;
+                selectColor.disabled = true;
+                selectColor.className = "absolute bottom-1 right-1 text-[9px] bg-slate-950/90 text-slate-300 border border-slate-700 rounded px-0.5 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer";
+                selectColor.innerHTML = `
+                    <option value="gray">🔘 Šedá</option>
+                    <option value="blue">🔵 Modrá</option>
+                    <option value="green">🟢 Zelená</option>
+                    <option value="yellow">🟡 Žlutá</option>
+                    <option value="red">🔴 Červená</option>
+                `;
+
+                // Reakce na změnu barvy za běhu (vizuální odezva před uložením)
+                selectColor.addEventListener('change', () => {
+                    applyCellColor(td, selectColor.value);
+                });
+
+                td.appendChild(input);
+                td.appendChild(selectColor);
+                tr.appendChild(td);
+            }
+            tableBody.appendChild(tr);
+        }
+
+        // Seznam všech prvků pro hromadné zamykání/odemykání a ukládání
+        const allInputs = document.querySelectorAll('table input');
+        const allSelects = document.querySelectorAll('table select');
+
+        // Pomocná funkce na změnu třídy barvy
+        function applyCellColor(element, colorName) {
+            element.className = "p-1 rounded-xl border transition-all duration-200 relative group";
+            if(colorName === 'blue') element.classList.add('cell-blue');
+            else if(colorName === 'green') element.classList.add('cell-green');
+            else if(colorName === 'yellow') element.classList.add('cell-yellow');
+            else if(colorName === 'red') element.classList.add('cell-red');
+            else element.classList.add('cell-gray');
+        }
+
+        // REAL-TIME SYNCHRONIZACE Z FIREBASE
+        onSnapshot(doc(db, "grid_schedule", "data"), (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.data();
+                
+                // Obnovení textů (včetně všech záhlaví a řádků)
+                allInputs.forEach(input => {
+                    if (data[input.id] !== undefined) {
+                        input.value = data[input.id];
+                    }
+                });
+
+                // Obnovení barev buněk
+                allSelects.forEach(select => {
+                    if (data[select.id] !== undefined) {
+                        select.value = data[select.id];
+                        const [,, r, c] = select.id.split('-');
+                        const td = document.getElementById(`td-${r}-${c}`);
+                        if(td) applyCellColor(td, data[select.id]);
+                    }
+                });
+            }
         });
-    }
 
-    document.getElementById('screen-start').style.display = 'none';
-    document.getElementById('game').style.display = 'block';
+        // AKTIVACE ADMIN REŽIMU
+        adminBtn.addEventListener('click', () => {
+            if (!isAdmin) {
+                const pin = prompt("Zadej tvůj bezpečný Admin PIN:");
+                if (pin === ADMIN_PIN) {
+                    isAdmin = true;
+                    toggleFields(false);
+                    adminBtn.className = "px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20";
+                    adminText.textContent = "Admin: Aktivní";
+                    adminIcon.className = "fa-solid fa-lock-open text-slate-950";
+                    saveAllBtn.classList.remove('hidden');
+                    saveAllBtn.classList.add('flex');
+                } else if (pin !== null) {
+                    alert("Neautorizovaný přístup! Nesprávný kód.");
+                }
+            } else {
+                isAdmin = false;
+                toggleFields(true);
+                adminBtn.className = "px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition-all duration-300 border border-slate-700 flex items-center gap-2 cursor-pointer";
+                adminText.textContent = "Režim Čtení";
+                adminIcon.className = "fa-solid fa-lock";
+                saveAllBtn.classList.add('hidden');
+            }
+        });
 
-    db.ref('rooms/'+roomId+'/players/'+myId).set({ n: nick, x: 100, y: 100 });
-    db.ref('rooms/'+roomId+'/players').on('value', drawPlayers);
-    db.ref('rooms/'+roomId).once('value', snap => buildMap(snap.val()));
-}
+        function toggleFields(status) {
+            allInputs.forEach(input => input.disabled = status);
+            allSelects.forEach(select => select.disabled = status);
+        }
 
-function buildMap(data) {
-    const biom = biomes[data.biom];
-    document.body.style.background = biom.bg;
-    document.getElementById('biom-name').innerText = biom.n;
-    const m = document.getElementById('map');
-    m.className = biom.fx;
-    m.innerHTML = "";
+        // BEZPEČNÉ UKLÁDÁNÍ DO FIREBASE
+        saveAllBtn.addEventListener('click', async () => {
+            if (!isAdmin) return;
 
-    // Generov�n� 3D kostek s obrysem
-    for(let i=0; i<40; i++) {
-        let b = document.createElement('div');
-        b.className = 'obs';
-        b.style.width = (50 + Math.random()*150) + "px";
-        b.style.height = "40px";
-        b.style.left = Math.random()*(window.innerWidth-150) + "px";
-        b.style.top = Math.random()*(window.innerHeight-250) + "px";
-        b.style.background = biom.wall;
-        m.appendChild(b);
-    }
+            const updateData = {};
+            
+            // Uložíme všechny texty
+            allInputs.forEach(input => {
+                updateData[input.id] = input.value;
+            });
 
-    // C�l
-    let g = document.createElement('div');
-    g.className = 'goal';
-    g.innerHTML = "C�L";
-    g.style.left = (window.innerWidth - 120) + "px";
-    g.style.top = (window.innerHeight - 250) + "px";
-    m.appendChild(g);
-}
+            // Uložíme všechny barvy
+            allSelects.forEach(select => {
+                updateData[select.id] = select.value;
+            });
 
-function move(dir) {
-    if(isFinished) return;
-    let step = 20;
-    if(dir=='u') myPos.y -= step; if(dir=='d') myPos.y += step;
-    if(dir=='l') myPos.x -= step; if(dir=='r') myPos.x += step;
+            // 🔐 Nejdůležitější bezpečnostní klíč – shoduje se s pravidlem ve Firebase
+            updateData['cell_admin_verify'] = "140514"; 
 
-    myPos.x = Math.max(0, Math.min(window.innerWidth-40, myPos.x));
-    myPos.y = Math.max(0, Math.min(window.innerHeight-150, myPos.y));
-
-    db.ref('rooms/'+roomId+'/players/'+myId).update({ x: myPos.x, y: myPos.y });
-
-    if(myPos.x > window.innerWidth-150 && myPos.y > window.innerHeight-300) {
-        isFinished = true;
-        alert("MAPA DOKON�ENA!");
-        location.reload();
-    }
-}
-
-function drawPlayers(snap) {
-    const players = snap.val();
-    document.querySelectorAll('.player').forEach(p => p.remove());
-    for(let id in players) {
-        let p = players[id];
-        let div = document.createElement('div');
-        div.className = 'player';
-        div.style.left = p.x + "px"; div.style.top = p.y + "px";
-        div.style.background = (id === myId) ? 'var(--accent)' : 'var(--p)';
-        div.innerHTML = `<div class="p-name">${p.n}</div>??`;
-        document.getElementById('map').appendChild(div);
-    }
-}
-</script>
+            try {
+                await setDoc(doc(db, "grid_schedule", "data"), updateData);
+                alert("Všechno perfektně uloženo a aktualizováno pro všechny diváky!");
+            } catch (error) {
+                console.error("Chyba při ukládání: ", error);
+                alert("Zápis byl zablokován databází! Zkontroluj, zda máš ve Firebase nastavená nová Rules.");
+            }
+        });
+    </script>
 </body>
 </html>
