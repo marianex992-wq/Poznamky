@@ -3,72 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Živý Plánovač pro Hráče</title>
+    <title>🎮 Herní Rozvrh & Směny Hráčů</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Moderní temné gaming pozadí s fialovo-modrým zářením */
         body {
-            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            background: linear-gradient(180deg, #090d16 0%, #05070c 100%), 
+                        radial-gradient(circle at 50% -20%, #3b82f6 0%, transparent 50%),
+                        radial-gradient(circle at 0% 100%, #8b5cf6 0%, transparent 40%);
+            background-blend-mode: screen;
             min-height: 100vh;
         }
-        .cell-gray { background: #334155 !important; color: #f8fafc !important; }
-        .cell-blue { background: #1e3a8a !important; color: #93c5fd !important; border-color: #3b82f6 !important; }
-        .cell-green { background: #064e3b !important; color: #6ee7b7 !important; border-color: #10b981 !important; }
-        .cell-yellow { background: #78350f !important; color: #fde047 !important; border-color: #eab308 !important; }
-        .cell-red { background: #7f1d1d !important; color: #fca5a5 !important; border-color: #ef4444 !important; }
 
+        /* Vylepšené barvy buněk, které skvěle svítí na mobilu i PC */
+        .cell-gray { background: rgba(30, 41, 59, 0.7) !important; color: #f8fafc !important; border-color: rgba(71, 85, 105, 0.5) !important; }
+        .cell-blue { background: rgba(29, 78, 216, 0.7) !important; color: #93c5fd !important; border-color: #3b82f6 !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+        .cell-green { background: rgba(4, 120, 87, 0.7) !important; color: #6ee7b7 !important; border-color: #10b981 !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        .cell-yellow { background: rgba(180, 83, 9, 0.7) !important; color: #fde047 !important; border-color: #eab308 !important; box-shadow: 0 0 10px rgba(234, 179, 8, 0.2); }
+        .cell-red { background: rgba(185, 28, 28, 0.7) !important; color: #fca5a5 !important; border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+
+        /* Responzivní chování textových polí */
         .custom-table input:disabled {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
             cursor: default;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         .custom-table select:disabled {
             display: none !important;
         }
+
+        /* Plynulé scrollování pro mobily */
+        .table-container {
+            -webkit-overflow-scrolling: touch;
+        }
     </style>
 </head>
-<body class="p-3 md:p-8 text-slate-100 font-sans antialiased">
+<body class="p-2 md:p-6 text-slate-100 font-sans antialiased">
 
-    <div class="max-w-7xl mx-auto space-y-6">
+    <div class="max-w-7xl mx-auto space-y-4">
         
-        <div class="flex flex-col lg:flex-row justify-between items-center bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-2xl gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-amber-500 flex items-center justify-center shadow-lg">
-                    <i class="fa-solid fa-gamepad text-xl text-white"></i>
+        <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-900/90 border border-slate-800 p-4 md:p-6 rounded-2xl shadow-2xl gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-gamepad text-lg text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black text-white tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Live Rozvrh Hráčů</h1>
-                    <p class="text-xs text-slate-400 font-medium">Hráči vidí změny živě v reálném čase</p>
+                    <h1 class="text-xl md:text-2xl font-black text-white tracking-tight">Live Rozvrh Hráčů</h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Posunutím prstem do stran zobrazíš celou tabulku</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
-                <div id="statusMessage" class="text-xs font-semibold px-3 py-1.5 rounded-xl hidden bg-rose-500/20 text-rose-400 border border-rose-500/30"></div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div id="statusMessage" class="text-xs font-semibold px-3 py-2 rounded-xl hidden bg-rose-500/20 text-rose-400 border border-rose-500/30"></div>
 
-                <button id="saveAllBtn" class="hidden px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl transition shadow-lg items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit a odeslat hráčům
+                <button id="saveAllBtn" class="hidden px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl transition shadow-lg items-center gap-2 cursor-pointer text-sm">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit
                 </button>
 
-                <button id="adminBtn" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition border border-slate-700 flex items-center gap-2 cursor-pointer">
+                <button id="adminBtn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl transition border border-slate-700 flex items-center gap-2 cursor-pointer text-sm">
                     <i class="fa-solid fa-lock" id="adminIcon"></i>
-                    <span id="adminText">Režim Čtení (Hráči)</span>
+                    <span id="adminText">Čtení</span>
                 </button>
             </div>
         </div>
 
-        <div class="bg-slate-900/60 backdrop-blur-md rounded-3xl shadow-2xl border border-slate-800 p-4 md:p-6 overflow-x-auto">
-            <table class="w-full border-separate border-spacing-2 custom-table min-w-[1000px]">
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl shadow-2xl p-2 md:p-4 table-container overflow-x-auto">
+            <table class="w-full border-separate border-spacing-1.5 custom-table min-w-[750px] md:min-w-[1000px]">
                 <thead>
-                    <tr class="text-slate-400 text-sm">
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80">
+                    <tr class="text-slate-400 text-xs md:text-sm">
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800">
                             <input type="text" id="col0" disabled value="Pozice / Čas" class="w-full text-center bg-transparent font-black tracking-wider uppercase text-xs text-amber-500 focus:outline-none">
                         </th>
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col1" disabled value="Sloupec 1" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col2" disabled value="Sloupec 2" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col3" disabled value="Sloupec 3" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col4" disabled value="Sloupec 4" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-44 bg-slate-950/40 rounded-xl border border-slate-800/80"><input type="text" id="col5" disabled value="Sloupec 5" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col1" disabled value="Sloupec 1" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col2" disabled value="Sloupec 2" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col3" disabled value="Sloupec 3" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col4" disabled value="Sloupec 4" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
+                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col5" disabled value="Sloupec 5" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -96,7 +109,7 @@
 
         let isAdmin = false;
         const ADMIN_PIN = "140514"; 
-        const TOTAL_ROWS = 12;      
+        const TOTAL_ROWS = 7; // Zkráceno na 7 řádků podle přání
 
         const adminBtn = document.getElementById('adminBtn');
         const adminIcon = document.getElementById('adminIcon');
@@ -114,26 +127,27 @@
                 statusMessage.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
             }
             statusMessage.classList.remove('hidden');
-            setTimeout(() => statusMessage.classList.add('hidden'), 5000);
+            setTimeout(() => statusMessage.classList.add('hidden'), 4000);
         }
 
+        // Vykreslení 7 řádků
         for (let r = 1; r <= TOTAL_ROWS; r++) {
             const tr = document.createElement('tr');
             
             const tdLabel = document.createElement('td');
-            tdLabel.className = "p-1 bg-slate-950/20 rounded-xl border border-slate-800";
+            tdLabel.className = "p-1 bg-slate-950/40 rounded-xl border border-slate-800";
             const rowInput = document.createElement('input');
             rowInput.type = "text";
             rowInput.id = `rowlabel-${r}`;
             rowInput.disabled = true;
             rowInput.value = `Řádek ${r}`;
-            rowInput.className = "w-full p-2.5 text-sm font-semibold text-slate-400 bg-transparent text-center focus:outline-none";
+            rowInput.className = "w-full p-2 text-xs md:text-sm font-semibold text-slate-300 bg-transparent text-center focus:outline-none";
             tdLabel.appendChild(rowInput);
             tr.appendChild(tdLabel);
 
             for (let c = 1; c <= 5; c++) {
                 const td = document.createElement('td');
-                td.className = "p-1 bg-slate-800/40 rounded-xl border border-slate-700/50 transition-all duration-200 relative group";
+                td.className = "p-1 bg-slate-800/30 rounded-xl border border-slate-700/40 transition-all duration-150 relative group";
                 td.id = `td-${r}-${c}`;
                 
                 const input = document.createElement('input');
@@ -141,12 +155,12 @@
                 input.id = `cell-${r}-${c}`;
                 input.disabled = true;
                 input.placeholder = "-";
-                input.className = "w-full p-2.5 text-sm font-medium bg-transparent text-center focus:outline-none rounded-lg transition-all";
+                input.className = "w-full p-2 text-xs md:text-sm font-bold bg-transparent text-center focus:outline-none rounded-lg transition-all";
                 
                 const selectColor = document.createElement('select');
                 selectColor.id = `color-${r}-${c}`;
                 selectColor.disabled = true;
-                selectColor.className = "absolute bottom-1 right-1 text-[9px] bg-slate-950/90 text-slate-300 border border-slate-700 rounded px-0.5 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer";
+                selectColor.className = "absolute bottom-0.5 right-0.5 text-[8px] md:text-[9px] bg-slate-950/95 text-slate-300 border border-slate-700 rounded px-0.5 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10";
                 selectColor.innerHTML = `
                     <option value="gray">🔘 Šedá</option>
                     <option value="blue">🔵 Modrá</option>
@@ -170,7 +184,7 @@
         const allSelects = document.querySelectorAll('table select');
 
         function applyCellColor(element, colorName) {
-            element.className = "p-1 rounded-xl border transition-all duration-200 relative group";
+            element.className = "p-1 rounded-xl border transition-all duration-150 relative group";
             if(colorName === 'blue') element.classList.add('cell-blue');
             else if(colorName === 'green') element.classList.add('cell-green');
             else if(colorName === 'yellow') element.classList.add('cell-yellow');
@@ -178,7 +192,7 @@
             else element.classList.add('cell-gray');
         }
 
-        // POSLUCHAČ ZMĚN
+        // ŽIVÉ NAČÍTÁNÍ Z DATABÁZE
         onSnapshot(doc(db, "grid_schedule", "data"), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
@@ -196,30 +210,30 @@
             }
         }, (error) => {
             console.error("Chyba synchronizace: ", error);
-            showStatus("Hráči nemohou načíst data. Zkontroluj sekci Rules ve Firebase.");
+            showStatus("Hráči nemají přístup k datům.");
         });
 
         // PŘIHLÁŠENÍ ADMINA
         adminBtn.addEventListener('click', () => {
             if (!isAdmin) {
-                const pin = prompt("Zadej tajný Admin PIN:");
+                const pin = prompt("Zadej tvůj tajný Admin PIN:");
                 if (pin === ADMIN_PIN) {
                     isAdmin = true;
                     toggleFields(false);
-                    adminBtn.className = "px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg";
-                    adminText.textContent = "Admin: Editace";
+                    adminBtn.className = "px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg text-sm";
+                    adminText.textContent = "Admin";
                     adminIcon.className = "fa-solid fa-lock-open text-slate-950";
                     saveAllBtn.classList.remove('hidden');
                     saveAllBtn.classList.add('flex');
-                    showStatus("Odemčeno! Můžeš upravovat tabulku.", false);
+                    showStatus("Tabulka odemčena k úpravám.", false);
                 } else if (pin !== null) {
                     alert("Špatný kód!");
                 }
             } else {
                 isAdmin = false;
                 toggleFields(true);
-                adminBtn.className = "px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition border border-slate-700 flex items-center gap-2 cursor-pointer";
-                adminText.textContent = "Režim Čtení (Hráči)";
+                adminBtn.className = "px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl transition border border-slate-700 flex items-center gap-2 cursor-pointer text-sm";
+                adminText.textContent = "Čtení";
                 adminIcon.className = "fa-solid fa-lock";
                 saveAllBtn.classList.add('hidden');
             }
@@ -240,12 +254,11 @@
             updateData['cell_admin_verify'] = "140514"; 
 
             try {
-                // setDoc vytvoří složku automaticky, pokud ještě neexistuje
                 await setDoc(doc(db, "grid_schedule", "data"), updateData);
-                showStatus("Uloženo! Změny se ihned propsaly všem hráčům.", false);
+                showStatus("Změny a barvy uloženy pro všechny hráče!", false);
             } catch (error) {
                 console.error("Chyba ukládání: ", error);
-                showStatus("Chyba: Zkontroluj, zda máš ve Firebase záložce Rules povoleno 'allow write'.");
+                showStatus("Chyba ukládání. Zkontroluj Rules ve Firebase.");
             }
         });
     </script>
