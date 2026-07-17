@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Prémiový Plánovač Směn & Rozvrhu</title>
+    <title>⚡ Živý Plánovač pro Hráče</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,14 +11,12 @@
             background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
             min-height: 100vh;
         }
-        /* Styly pro buňky podle vybrané barvy */
         .cell-gray { background: #334155 !important; color: #f8fafc !important; }
         .cell-blue { background: #1e3a8a !important; color: #93c5fd !important; border-color: #3b82f6 !important; }
         .cell-green { background: #064e3b !important; color: #6ee7b7 !important; border-color: #10b981 !important; }
         .cell-yellow { background: #78350f !important; color: #fde047 !important; border-color: #eab308 !important; }
         .cell-red { background: #7f1d1d !important; color: #fca5a5 !important; border-color: #ef4444 !important; }
 
-        /* Když je políčko uzamčené pro čtenáře */
         .custom-table input:disabled {
             background: transparent !important;
             border: none !important;
@@ -36,23 +34,25 @@
         
         <div class="flex flex-col lg:flex-row justify-between items-center bg-slate-900/80 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-2xl gap-4">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-amber-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
-                    <i class="fa-solid fa-calendar-days text-xl text-white"></i>
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-amber-500 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-gamepad text-xl text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-black text-white tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Live Dashboard Směn</h1>
-                    <p class="text-xs text-slate-400 font-medium">Synchronizace v reálném čase • Chráněno šifrováním</p>
+                    <h1 class="text-2xl font-black text-white tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Live Rozvrh Hráčů</h1>
+                    <p class="text-xs text-slate-400 font-medium">Hráči vidí změny živě v reálném čase</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3 w-full lg:w-auto justify-end">
-                <button id="saveAllBtn" class="hidden px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-emerald-900/30 items-center gap-2 cursor-pointer transform hover:-translate-y-0.5 active:translate-y-0">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit změny
+                <div id="statusMessage" class="text-xs font-semibold px-3 py-1.5 rounded-xl hidden bg-rose-500/20 text-rose-400 border border-rose-500/30"></div>
+
+                <button id="saveAllBtn" class="hidden px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-2xl transition shadow-lg items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit a odeslat hráčům
                 </button>
 
-                <button id="adminBtn" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition-all duration-300 border border-slate-700 flex items-center gap-2 cursor-pointer shadow-md">
+                <button id="adminBtn" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition border border-slate-700 flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-lock" id="adminIcon"></i>
-                    <span id="adminText">Režim Čtení</span>
+                    <span id="adminText">Režim Čtení (Hráči)</span>
                 </button>
             </div>
         </div>
@@ -81,7 +81,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurace s tvými údaji
         const firebaseConfig = {
             apiKey: "AIzaSyDl7LefJrniJ_4RbXmP6dTARNHyMkB0yFI",
             authDomain: "kalendar-70f7a.firebaseapp.com",
@@ -96,20 +95,31 @@
         const db = getFirestore(app);
 
         let isAdmin = false;
-        const ADMIN_PIN = "140514"; // Tvůj nový bezpečný kód
-        const TOTAL_ROWS = 12;      // Celkem 12 plně nastavitelných řádků
+        const ADMIN_PIN = "140514"; 
+        const TOTAL_ROWS = 12;      
 
         const adminBtn = document.getElementById('adminBtn');
         const adminIcon = document.getElementById('adminIcon');
         const adminText = document.getElementById('adminText');
         const saveAllBtn = document.getElementById('saveAllBtn');
         const tableBody = document.getElementById('tableBody');
+        const statusMessage = document.getElementById('statusMessage');
 
-        // Dynamické sestavení řádků tabulky
+        function showStatus(text, isError = true) {
+            statusMessage.textContent = text;
+            statusMessage.classList.remove('hidden', 'bg-rose-500/20', 'text-rose-400', 'border-rose-500/30', 'bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
+            if (isError) {
+                statusMessage.classList.add('bg-rose-500/20', 'text-rose-400', 'border-rose-500/30');
+            } else {
+                statusMessage.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
+            }
+            statusMessage.classList.remove('hidden');
+            setTimeout(() => statusMessage.classList.add('hidden'), 5000);
+        }
+
         for (let r = 1; r <= TOTAL_ROWS; r++) {
             const tr = document.createElement('tr');
             
-            // Sloupec 0: Názvy řádků (predefinované, ale plně editovatelné adminem)
             const tdLabel = document.createElement('td');
             tdLabel.className = "p-1 bg-slate-950/20 rounded-xl border border-slate-800";
             const rowInput = document.createElement('input');
@@ -121,13 +131,11 @@
             tdLabel.appendChild(rowInput);
             tr.appendChild(tdLabel);
 
-            // Sloupce 1 až 5 (obsah + výběr barvy)
             for (let c = 1; c <= 5; c++) {
                 const td = document.createElement('td');
                 td.className = "p-1 bg-slate-800/40 rounded-xl border border-slate-700/50 transition-all duration-200 relative group";
                 td.id = `td-${r}-${c}`;
                 
-                // Hlavní textové pole buňky
                 const input = document.createElement('input');
                 input.type = "text";
                 input.id = `cell-${r}-${c}`;
@@ -135,7 +143,6 @@
                 input.placeholder = "-";
                 input.className = "w-full p-2.5 text-sm font-medium bg-transparent text-center focus:outline-none rounded-lg transition-all";
                 
-                // Výběr barvy buňky (zobrazí se pouze adminovi)
                 const selectColor = document.createElement('select');
                 selectColor.id = `color-${r}-${c}`;
                 selectColor.disabled = true;
@@ -148,7 +155,6 @@
                     <option value="red">🔴 Červená</option>
                 `;
 
-                // Reakce na změnu barvy za běhu (vizuální odezva před uložením)
                 selectColor.addEventListener('change', () => {
                     applyCellColor(td, selectColor.value);
                 });
@@ -160,11 +166,9 @@
             tableBody.appendChild(tr);
         }
 
-        // Seznam všech prvků pro hromadné zamykání/odemykání a ukládání
         const allInputs = document.querySelectorAll('table input');
         const allSelects = document.querySelectorAll('table select');
 
-        // Pomocná funkce na změnu třídy barvy
         function applyCellColor(element, colorName) {
             element.className = "p-1 rounded-xl border transition-all duration-200 relative group";
             if(colorName === 'blue') element.classList.add('cell-blue');
@@ -174,19 +178,13 @@
             else element.classList.add('cell-gray');
         }
 
-        // REAL-TIME SYNCHRONIZACE Z FIREBASE
+        // POSLUCHAČ ZMĚN
         onSnapshot(doc(db, "grid_schedule", "data"), (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.data();
-                
-                // Obnovení textů (včetně všech záhlaví a řádků)
                 allInputs.forEach(input => {
-                    if (data[input.id] !== undefined) {
-                        input.value = data[input.id];
-                    }
+                    if (data[input.id] !== undefined) input.value = data[input.id];
                 });
-
-                // Obnovení barev buněk
                 allSelects.forEach(select => {
                     if (data[select.id] !== undefined) {
                         select.value = data[select.id];
@@ -196,28 +194,32 @@
                     }
                 });
             }
+        }, (error) => {
+            console.error("Chyba synchronizace: ", error);
+            showStatus("Hráči nemohou načíst data. Zkontroluj sekci Rules ve Firebase.");
         });
 
-        // AKTIVACE ADMIN REŽIMU
+        // PŘIHLÁŠENÍ ADMINA
         adminBtn.addEventListener('click', () => {
             if (!isAdmin) {
-                const pin = prompt("Zadej tvůj bezpečný Admin PIN:");
+                const pin = prompt("Zadej tajný Admin PIN:");
                 if (pin === ADMIN_PIN) {
                     isAdmin = true;
                     toggleFields(false);
-                    adminBtn.className = "px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20";
-                    adminText.textContent = "Admin: Aktivní";
+                    adminBtn.className = "px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg";
+                    adminText.textContent = "Admin: Editace";
                     adminIcon.className = "fa-solid fa-lock-open text-slate-950";
                     saveAllBtn.classList.remove('hidden');
                     saveAllBtn.classList.add('flex');
+                    showStatus("Odemčeno! Můžeš upravovat tabulku.", false);
                 } else if (pin !== null) {
-                    alert("Neautorizovaný přístup! Nesprávný kód.");
+                    alert("Špatný kód!");
                 }
             } else {
                 isAdmin = false;
                 toggleFields(true);
-                adminBtn.className = "px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition-all duration-300 border border-slate-700 flex items-center gap-2 cursor-pointer";
-                adminText.textContent = "Režim Čtení";
+                adminBtn.className = "px-6 py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-2xl transition border border-slate-700 flex items-center gap-2 cursor-pointer";
+                adminText.textContent = "Režim Čtení (Hráči)";
                 adminIcon.className = "fa-solid fa-lock";
                 saveAllBtn.classList.add('hidden');
             }
@@ -228,31 +230,22 @@
             allSelects.forEach(select => select.disabled = status);
         }
 
-        // BEZPEČNÉ UKLÁDÁNÍ DO FIREBASE
+        // UKLÁDÁNÍ
         saveAllBtn.addEventListener('click', async () => {
             if (!isAdmin) return;
 
             const updateData = {};
-            
-            // Uložíme všechny texty
-            allInputs.forEach(input => {
-                updateData[input.id] = input.value;
-            });
-
-            // Uložíme všechny barvy
-            allSelects.forEach(select => {
-                updateData[select.id] = select.value;
-            });
-
-            // 🔐 Nejdůležitější bezpečnostní klíč – shoduje se s pravidlem ve Firebase
+            allInputs.forEach(input => updateData[input.id] = input.value);
+            allSelects.forEach(select => updateData[select.id] = select.value);
             updateData['cell_admin_verify'] = "140514"; 
 
             try {
+                // setDoc vytvoří složku automaticky, pokud ještě neexistuje
                 await setDoc(doc(db, "grid_schedule", "data"), updateData);
-                alert("Všechno perfektně uloženo a aktualizováno pro všechny diváky!");
+                showStatus("Uloženo! Změny se ihned propsaly všem hráčům.", false);
             } catch (error) {
-                console.error("Chyba při ukládání: ", error);
-                alert("Zápis byl zablokován databází! Zkontroluj, zda máš ve Firebase nastavená nová Rules.");
+                console.error("Chyba ukládání: ", error);
+                showStatus("Chyba: Zkontroluj, zda máš ve Firebase záložce Rules povoleno 'allow write'.");
             }
         });
     </script>
