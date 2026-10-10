@@ -1,266 +1,249 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="cs" data-theme="svetly">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎮 Herní Rozvrh & Směny Hráčů</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Moderní temné gaming pozadí s fialovo-modrým zářením */
-        body {
-            background: linear-gradient(180deg, #090d16 0%, #05070c 100%), 
-                        radial-gradient(circle at 50% -20%, #3b82f6 0%, transparent 50%),
-                        radial-gradient(circle at 0% 100%, #8b5cf6 0%, transparent 40%);
-            background-blend-mode: screen;
-            min-height: 100vh;
-        }
-
-        /* Vylepšené barvy buněk, které skvěle svítí na mobilu i PC */
-        .cell-gray { background: rgba(30, 41, 59, 0.7) !important; color: #f8fafc !important; border-color: rgba(71, 85, 105, 0.5) !important; }
-        .cell-blue { background: rgba(29, 78, 216, 0.7) !important; color: #93c5fd !important; border-color: #3b82f6 !important; box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
-        .cell-green { background: rgba(4, 120, 87, 0.7) !important; color: #6ee7b7 !important; border-color: #10b981 !important; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
-        .cell-yellow { background: rgba(180, 83, 9, 0.7) !important; color: #fde047 !important; border-color: #eab308 !important; box-shadow: 0 0 10px rgba(234, 179, 8, 0.2); }
-        .cell-red { background: rgba(185, 28, 28, 0.7) !important; color: #fca5a5 !important; border-color: #ef4444 !important; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
-
-        /* Responzivní chování textových polí */
-        .custom-table input:disabled {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            cursor: default;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-        .custom-table select:disabled {
-            display: none !important;
-        }
-
-        /* Plynulé scrollování pro mobily */
-        .table-container {
-            -webkit-overflow-scrolling: touch;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Čištění klávesnic Olomouc | 400 Kč</title>
+<meta name="description" content="Kompletní vyčištění klávesnice za 400 Kč. Osobně v okrese Olomouc, jinde v ČR přes GLS.">
+<style>
+:root{--bg:#eef2f8;--ink:#14213d;--muted:#5a6785;--card:#fff;--edge:#d5ddeb;--accent:#2563eb;--accent-ink:#fff;--hero1:#14213d;--hero2:#2b4a8a;--heroink:#fff;--herosub:#c5d3f0;--kcap:#f7f9fc;--kedge:#aab6cc;--ktext:#2a3550;--kbbg:#c7d0e0;--glow:0px;--sun:#ffc531;--radius:18px}
+[data-theme=tmavy]{--bg:#0d1117;--ink:#e6edf3;--muted:#8b98a9;--card:#161b22;--edge:#05080c;--accent:#58a6ff;--accent-ink:#04101f;--hero1:#0d1117;--hero2:#1f2a3a;--herosub:#9fb0c6;--kcap:#2b3440;--kedge:#0a0d12;--ktext:#d5dde8;--kbbg:#1a2029}
+[data-theme=neon]{--bg:#0b0614;--ink:#f1e9ff;--muted:#a899c7;--card:#170d2b;--edge:#050209;--accent:#ff3df2;--accent-ink:#1a0020;--hero1:#0b0614;--hero2:#2a0f55;--herosub:#c5b3ea;--kcap:#1e1236;--kedge:#07030e;--ktext:#59f5ff;--kbbg:#120a22;--glow:6px;--sun:#59f5ff}
+[data-theme=retro]{--bg:#d9d3c1;--ink:#2d2a22;--muted:#6a6454;--card:#ebe6d6;--edge:#b6ae96;--accent:#b3392b;--accent-ink:#fff;--hero1:#8b8470;--hero2:#a89f86;--heroink:#2d2a22;--herosub:#463f30;--kcap:#e3dcc6;--kedge:#8e866f;--ktext:#3b362a;--kbbg:#74705f;--sun:#b3392b;--radius:6px}
+[data-theme=mint]{--bg:#e8f3f0;--ink:#10302b;--muted:#4f6f69;--card:#fff;--edge:#c5dcd6;--accent:#0f9d86;--accent-ink:#fff;--hero1:#0b3b34;--hero2:#14907c;--herosub:#bdeee3;--kcap:#fbfffe;--kedge:#9cc4bb;--ktext:#16403a;--kbbg:#b5d3cc;--sun:#ffd23f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 "Trebuchet MS",Verdana,sans-serif;transition:background .3s,color .3s}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+.styles{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--edge);padding:8px 0}
+.styles .wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;font-size:.9rem;color:var(--muted)}
+.dot{width:30px;height:30px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--edge);cursor:pointer;padding:0}
+.dot[aria-pressed=true]{box-shadow:0 0 0 3px var(--accent)}
+.hero{background:linear-gradient(160deg,var(--hero1),var(--hero2));color:var(--heroink);padding:54px 0 70px;text-align:center;overflow:hidden}
+.pill{display:inline-block;background:var(--sun);color:#1a1500;font-weight:800;padding:7px 18px;border-radius:999px;margin-bottom:20px;font-size:.95rem}
+h1{font:800 clamp(2.4rem,7vw,4.4rem)/1.04 "Trebuchet MS",Verdana,sans-serif;margin:0 auto 16px;max-width:14em;letter-spacing:-.02em}
+.hero p.sub{color:var(--herosub);font-size:1.2rem;max-width:34em;margin:0 auto 26px}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);border:0;border-radius:14px;padding:16px 32px;font:800 1.1rem "Trebuchet MS",Verdana,sans-serif;text-decoration:none;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.28)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.stage{margin:44px auto 0;max-width:900px;perspective:1500px}
+.stage svg{transform:rotateX(16deg);filter:drop-shadow(0 28px 22px rgba(0,0,0,.45)) drop-shadow(0 0 var(--glow) var(--accent))}
+svg.kb{width:100%;height:auto;display:block}
+section{padding:58px 0}
+h2{font-size:2rem;margin:0 0 8px;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:0 0 28px}
+.price-card{display:grid;gap:26px;grid-template-columns:1fr;background:var(--card);border-radius:var(--radius);padding:30px;box-shadow:0 7px 0 var(--edge);border:2px solid var(--accent)}
+@media(min-width:760px){.price-card{grid-template-columns:1.4fr 1fr;align-items:center}}
+.price-card ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.price-card li{padding-left:34px;position:relative}
+.price-card li::before{content:"✓";position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:.9rem;font-weight:800}
+.big{text-align:center}
+.big b{display:block;font-size:4rem;line-height:1;color:var(--accent);letter-spacing:-.03em}
+.big span{color:var(--muted)}
+.steps{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:26px}
+.step{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:0 5px 0 var(--edge)}
+.step h3{margin:0 0 4px;font-size:1.1rem}
+.step p{margin:0;color:var(--muted)}
+.ba{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.ba figure{margin:0;background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 5px 0 var(--edge)}
+.ba figcaption{font-weight:800;padding:8px 6px 2px}
+.area{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.area .card{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:0 5px 0 var(--edge);border-top:8px solid var(--accent)}
+.area .gls{border-top-color:var(--sun)}
+.area h3{margin:0 0 6px}.area p{margin:0;color:var(--muted)}
+.formbox{background:var(--card);border-radius:var(--radius);padding:30px;box-shadow:0 7px 0 var(--edge);max-width:760px}
+form{display:grid;gap:16px;grid-template-columns:1fr 1fr}
+.full{grid-column:1/-1}
+@media(max-width:620px){form{grid-template-columns:1fr}}
+label{display:block;font-weight:700;font-size:.92rem;margin-bottom:5px}
+input,textarea,select{width:100%;padding:14px;border:2px solid var(--edge);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit}
+input:focus,textarea:focus,select:focus,button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+#status{min-height:1.5em;font-weight:700}
+footer{background:var(--hero1);color:var(--herosub);padding:44px 0 30px;margin-top:20px}
+footer a{color:var(--sun);font-weight:800}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:flex-end}
+footer strong{color:var(--heroink);font-size:1.3rem}
+#adminBtn{background:none;border:0;font-size:1.4rem;padding:8px;border-radius:8px;cursor:pointer;opacity:.8}
+#panel{display:none;background:var(--card);border-radius:var(--radius);padding:24px;margin:30px 0;box-shadow:0 5px 0 var(--edge)}
+.msg{border-top:2px solid var(--bg);padding:14px 0}
+.msg small{color:var(--muted);display:block}
+.msg p{margin:6px 0 0;white-space:pre-wrap}
+.link{background:none;border:0;color:var(--accent);text-decoration:underline;padding:0;font:inherit;cursor:pointer}
+@media(max-width:700px){.stage svg{transform:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}body{transition:none}}
+</style>
 </head>
-<body class="p-2 md:p-6 text-slate-100 font-sans antialiased">
+<body>
+<div class="styles"><div class="wrap"><span>Styl stránky:</span><span id="dots" style="display:flex;gap:10px"></span></div></div>
 
-    <div class="max-w-7xl mx-auto space-y-4">
-        
-        <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-900/90 border border-slate-800 p-4 md:p-6 rounded-2xl shadow-2xl gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                    <i class="fa-solid fa-gamepad text-lg text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-white tracking-tight">Live Rozvrh Hráčů</h1>
-                    <p class="text-[11px] text-slate-400 font-medium">Posunutím prstem do stran zobrazíš celou tabulku</p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                <div id="statusMessage" class="text-xs font-semibold px-3 py-2 rounded-xl hidden bg-rose-500/20 text-rose-400 border border-rose-500/30"></div>
+<header class="hero">
+  <div class="wrap">
+    <span class="pill">Kompletní vyčištění jen 400 Kč</span>
+    <h1>Vaše klávesnice jako nová</h1>
+    <p class="sub">Sundáme všechny klávesy, odstraníme prach a drobky, vše umyjeme a složíme zpět. Osobně v okrese Olomouc, jinde v ČR přes GLS.</p>
+    <a class="btn" href="#kontakt">Chci vyčistit klávesnici</a>
+    <div class="stage" id="heroKb"></div>
+  </div>
+</header>
 
-                <button id="saveAllBtn" class="hidden px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl transition shadow-lg items-center gap-2 cursor-pointer text-sm">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Uložit
-                </button>
+<main class="wrap">
+<section>
+  <h2>Jedna cena, vše v ceně</h2>
+  <p class="lead">Žádné příplatky za základní nebo hloubkové čištění. Platíte jednou.</p>
+  <div class="price-card">
+    <ul>
+      <li>Sundání všech kláves</li>
+      <li>Odstranění prachu, drobků a špíny zpod kláves</li>
+      <li>Umytí kláves a vyčištění základny</li>
+      <li>Dezinfekce a složení zpět</li>
+      <li>Vyzkoušení, že všechny klávesy fungují</li>
+    </ul>
+    <div class="big"><b>400 Kč</b><span>za celé vyčištění</span></div>
+  </div>
+  <div class="steps">
+    <div class="step"><h3>1. Napíšete nám</h3><p>Vyplníte formulář a my se vám ozveme e-mailem.</p></div>
+    <div class="step"><h3>2. Předáte klávesnici</h3><p>V okrese Olomouc osobně, jinde pošlete balíkem GLS.</p></div>
+    <div class="step"><h3>3. Dostanete ji zpět</h3><p>Čistou, dezinfikovanou a otestovanou.</p></div>
+  </div>
+</section>
 
-                <button id="adminBtn" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl transition border border-slate-700 flex items-center gap-2 cursor-pointer text-sm">
-                    <i class="fa-solid fa-lock" id="adminIcon"></i>
-                    <span id="adminText">Čtení</span>
-                </button>
-            </div>
-        </div>
+<section>
+  <h2>Před a po</h2>
+  <p class="lead">Takhle vypadá rozdíl.</p>
+  <div class="ba">
+    <figure><div id="dirtyKb"></div><figcaption>Před čištěním</figcaption></figure>
+    <figure><div id="cleanKb"></div><figcaption>Po čištění</figcaption></figure>
+  </div>
+</section>
 
-        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl shadow-2xl p-2 md:p-4 table-container overflow-x-auto">
-            <table class="w-full border-separate border-spacing-1.5 custom-table min-w-[750px] md:min-w-[1000px]">
-                <thead>
-                    <tr class="text-slate-400 text-xs md:text-sm">
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800">
-                            <input type="text" id="col0" disabled value="Pozice / Čas" class="w-full text-center bg-transparent font-black tracking-wider uppercase text-xs text-amber-500 focus:outline-none">
-                        </th>
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col1" disabled value="Sloupec 1" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col2" disabled value="Sloupec 2" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col3" disabled value="Sloupec 3" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col4" disabled value="Sloupec 4" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                        <th class="p-2 w-32 md:w-44 bg-slate-950/60 rounded-xl border border-slate-800"><input type="text" id="col5" disabled value="Sloupec 5" class="w-full text-center bg-transparent font-bold focus:outline-none"></th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    </tbody>
-            </table>
-        </div>
+<section>
+  <h2>Kde působíme</h2>
+  <p class="lead">Osobní předání v okrese Olomouc, jinak balíkem.</p>
+  <div class="area">
+    <div class="card"><h3>Okres Olomouc</h3><p>Klávesnici si od vás převezmeme a po vyčištění vrátíme. Místo a čas domluvíme e-mailem.</p></div>
+    <div class="card gls"><h3>Celá ČR přes GLS</h3><p>Zabalenou klávesnici pošlete balíkem GLS a my vám ji vyčištěnou pošleme zpět. Poštovné domluvíme předem.</p></div>
+  </div>
+</section>
+
+<section id="kontakt">
+  <h2>Napište nám</h2>
+  <p class="lead">Ozveme se vám e-mailem co nejdřív.</p>
+  <div class="formbox">
+  <form id="f">
+    <div><label for="name">Jméno</label><input id="name" name="name" required autocomplete="name"></div>
+    <div><label for="email">Váš e-mail</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+    <div><label for="phone">Telefon (nepovinné)</label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+    <div><label for="where">Odkud jste?</label>
+      <select id="where" name="where" required>
+        <option value="">Vyberte</option>
+        <option>Okres Olomouc, osobní předání</option>
+        <option>Jinde v ČR, zaslání přes GLS</option>
+      </select></div>
+    <div class="full"><label for="type">Jaká klávesnice</label>
+      <select id="type" name="type">
+        <option>Běžná počítačová klávesnice</option>
+        <option>Mechanická klávesnice</option>
+        <option>Herní klávesnice</option>
+        <option>Jiná / nevím</option>
+      </select></div>
+    <div class="full"><label for="text">Zpráva nebo dotaz</label><textarea id="text" name="message" rows="4" required placeholder="Např. po rozlité kávě, zanesená prachem, lepí se klávesy…"></textarea></div>
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+    <div class="full"><button class="btn" type="submit">Odeslat poptávku</button></div>
+    <div class="full"><div id="status" role="status"></div><p class="hint">Cena za kompletní vyčištění je 400 Kč.</p></div>
+  </form>
+  </div>
+</section>
+<div id="panel">
+  <h2>Admin: přijaté zprávy</h2>
+  <div id="list"></div>
+  <p><button class="link" id="clear">Smazat všechny zprávy</button> &nbsp; <button class="link" id="close">Zavřít</button></p>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <strong>Čištění klávesnic</strong><br>
+      Máte zájem? Napište na <a href="mailto:filip.vavryss@seznam.cz">filip.vavryss@seznam.cz</a><br>
+      Okres Olomouc osobně · celá ČR přes GLS · 400 Kč za vyčištění
     </div>
+    <button id="adminBtn" title="Admin" aria-label="Admin">⚙️</button>
+  </div>
+</footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script>
+var TO="filip.vavryss@seznam.cz", CODE="140514", KEY="klavesnice_zpravy", TK="klavesnice_styl";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDl7LefJrniJ_4RbXmP6dTARNHyMkB0yFI",
-            authDomain: "kalendar-70f7a.firebaseapp.com",
-            projectId: "kalendar-70f7a",
-            storageBucket: "kalendar-70f7a.firebasestorage.app",
-            messagingSenderId: "63936026731",
-            appId: "1:63936026731:web:c3f4fbf4209c55ae24792e",
-            measurementId: "G-XWK3NBNNLG"
-        };
+/* Styly stránky */
+var THEMES=[["svetly","Světlý","#2563eb"],["tmavy","Tmavý","#0d1117"],["neon","Neon","#ff3df2"],["retro","Retro","#b3392b"],["mint","Mátový","#0f9d86"]];
+function setTheme(t){document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem(TK,t);}catch(e){}
+  [].forEach.call(document.querySelectorAll(".dot"),function(b){b.setAttribute("aria-pressed",b.dataset.t===t);});}
+THEMES.forEach(function(t){var b=document.createElement("button");b.className="dot";b.dataset.t=t[0];b.title=t[1];b.setAttribute("aria-label","Styl "+t[1]);b.style.background=t[2];b.onclick=function(){setTheme(t[0]);};document.getElementById("dots").appendChild(b);});
+var saved="svetly";try{saved=localStorage.getItem(TK)||"svetly";}catch(e){}
+setTheme(saved);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+/* Plnohodnotná PC klávesnice (QWERTZ + numerická část) */
+function kb(dirty){
+  var rows=[
+   ["Esc",1,"F1","F2","F3","F4",.5,"F5","F6","F7","F8",.5,"F9","F10","F11","F12"],
+   [";","+","ě","š","č","ř","ž","ý","á","í","é","=","´",["Bksp",2],.5,"Num","/","*","-"],
+   [["Tab",1.5],"Q","W","E","R","T","Z","U","I","O","P","ú",")",["¨",1.5],.5,"7","8","9","+"],
+   [["Caps",1.75],"A","S","D","F","G","H","J","K","L","ů","§",["Enter",2.25],.5,"4","5","6"],
+   [["Shift",1.25],"<","Y","X","C","V","B","N","M",",",".","-",["Shift",2.75],.5,"1","2","3","Ent"],
+   [["Ctrl",1.25],["Win",1.25],["Alt",1.25],["",6.25],["Alt",1.25],["Win",1.25],["Menu",1.25],["Ctrl",1.25],.5,["0",2],","]
+  ];
+  var p=44,pad=22,seed=11,s="";
+  function r(){seed=(seed*9301+49297)%233280;return seed/233280;}
+  var cap=dirty?"#d3cbb4":"var(--kcap)",edge=dirty?"#8d8467":"var(--kedge)",tx=dirty?"#675f48":"var(--ktext)";
+  rows.forEach(function(row,ri){
+    var x=pad,y=pad+ri*p+(ri>0?12:0);
+    row.forEach(function(k){
+      if(typeof k==="number"){x+=k*p;return;}
+      var lab=Array.isArray(k)?k[0]:k, w=Array.isArray(k)?k[1]:1, kw=w*p-5;
+      s+='<rect x="'+x+'" y="'+(y+4)+'" width="'+kw+'" height="40" rx="7" fill="'+edge+'"/>';
+      s+='<rect x="'+x+'" y="'+y+'" width="'+kw+'" height="40" rx="7" fill="'+cap+'"/>';
+      s+='<rect x="'+(x+4)+'" y="'+(y+3)+'" width="'+(kw-8)+'" height="31" rx="5" fill="'+(dirty?"#000":"#fff")+'" opacity="'+(dirty?".07":".28")+'"/>';
+      if(lab)s+='<text x="'+(x+kw/2)+'" y="'+(y+25)+'" text-anchor="middle" font-size="'+(lab.length>3?10:lab.length>1?12:15)+'" font-weight="700" fill="'+tx+'" font-family="Trebuchet MS,Verdana,sans-serif">'+lab+'</text>';
+      if(dirty){
+        for(var i=0;i<3;i++)s+='<circle cx="'+(x+4+r()*(kw-8)).toFixed(1)+'" cy="'+(y+4+r()*32).toFixed(1)+'" r="'+(1+r()*2.4).toFixed(1)+'" fill="#6b4c28" opacity=".6"/>';
+        if(r()>.55)s+='<ellipse cx="'+(x+kw/2)+'" cy="'+(y+31)+'" rx="'+(kw/3)+'" ry="3.5" fill="#7d5a2c" opacity=".4"/>';
+      }
+      x+=w*p;
+    });
+  });
+  var W=pad*2+19.5*p-5,H=pad*2+6*p+12;
+  var back='<rect x="2" y="2" width="'+(W-4)+'" height="'+(H-4)+'" rx="18" fill="'+(dirty?"#4b463a":"var(--kbbg)")+'"/>';
+  var gap=dirty?"":'<rect x="12" y="12" width="'+(W-24)+'" height="6" rx="3" fill="#fff" opacity=".12"/>';
+  return '<svg class="kb" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(dirty?"Špinavá klávesnice":"Čistá klávesnice")+'">'+back+s+gap+'</svg>';
+}
+document.getElementById("heroKb").innerHTML=kb(false);
+document.getElementById("dirtyKb").innerHTML=kb(true);
+document.getElementById("cleanKb").innerHTML=kb(false);
 
-        let isAdmin = false;
-        const ADMIN_PIN = "140514"; 
-        const TOTAL_ROWS = 7; // Zkráceno na 7 řádků podle přání
+/* Formulář */
+function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]");}catch(e){return [];}}
+function save(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+document.getElementById("f").addEventListener("submit",function(e){
+  e.preventDefault();
+  var f=e.target,st=document.getElementById("status");
+  var d={name:f.name.value,email:f.email.value,phone:f.phone.value,where:f.where.value,type:f.type.value,message:f.message.value,date:new Date().toLocaleString("cs-CZ")};
+  st.textContent="Odesílám…";
+  var a=load();a.unshift(d);save(a);
+  fetch("https://formsubmit.co/ajax/"+TO,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},
+    body:JSON.stringify({Jmeno:d.name,Email:d.email,Telefon:d.phone,Odkud:d.where,Klavesnice:d.type,Zprava:d.message,_subject:"Nová poptávka: čištění klávesnice",_replyto:d.email,_honey:f._honey.value})})
+  .then(function(r){if(!r.ok)throw 0;f.reset();st.textContent="Děkujeme, poptávka byla odeslána. Ozveme se vám e-mailem.";})
+  .catch(function(){st.textContent="Odeslání se nepodařilo. Napište nám prosím přímo na "+TO+".";});
+});
 
-        const adminBtn = document.getElementById('adminBtn');
-        const adminIcon = document.getElementById('adminIcon');
-        const adminText = document.getElementById('adminText');
-        const saveAllBtn = document.getElementById('saveAllBtn');
-        const tableBody = document.getElementById('tableBody');
-        const statusMessage = document.getElementById('statusMessage');
-
-        function showStatus(text, isError = true) {
-            statusMessage.textContent = text;
-            statusMessage.classList.remove('hidden', 'bg-rose-500/20', 'text-rose-400', 'border-rose-500/30', 'bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
-            if (isError) {
-                statusMessage.classList.add('bg-rose-500/20', 'text-rose-400', 'border-rose-500/30');
-            } else {
-                statusMessage.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border-emerald-500/30');
-            }
-            statusMessage.classList.remove('hidden');
-            setTimeout(() => statusMessage.classList.add('hidden'), 4000);
-        }
-
-        // Vykreslení 7 řádků
-        for (let r = 1; r <= TOTAL_ROWS; r++) {
-            const tr = document.createElement('tr');
-            
-            const tdLabel = document.createElement('td');
-            tdLabel.className = "p-1 bg-slate-950/40 rounded-xl border border-slate-800";
-            const rowInput = document.createElement('input');
-            rowInput.type = "text";
-            rowInput.id = `rowlabel-${r}`;
-            rowInput.disabled = true;
-            rowInput.value = `Řádek ${r}`;
-            rowInput.className = "w-full p-2 text-xs md:text-sm font-semibold text-slate-300 bg-transparent text-center focus:outline-none";
-            tdLabel.appendChild(rowInput);
-            tr.appendChild(tdLabel);
-
-            for (let c = 1; c <= 5; c++) {
-                const td = document.createElement('td');
-                td.className = "p-1 bg-slate-800/30 rounded-xl border border-slate-700/40 transition-all duration-150 relative group";
-                td.id = `td-${r}-${c}`;
-                
-                const input = document.createElement('input');
-                input.type = "text";
-                input.id = `cell-${r}-${c}`;
-                input.disabled = true;
-                input.placeholder = "-";
-                input.className = "w-full p-2 text-xs md:text-sm font-bold bg-transparent text-center focus:outline-none rounded-lg transition-all";
-                
-                const selectColor = document.createElement('select');
-                selectColor.id = `color-${r}-${c}`;
-                selectColor.disabled = true;
-                selectColor.className = "absolute bottom-0.5 right-0.5 text-[8px] md:text-[9px] bg-slate-950/95 text-slate-300 border border-slate-700 rounded px-0.5 focus:outline-none opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10";
-                selectColor.innerHTML = `
-                    <option value="gray">🔘 Šedá</option>
-                    <option value="blue">🔵 Modrá</option>
-                    <option value="green">🟢 Zelená</option>
-                    <option value="yellow">🟡 Žlutá</option>
-                    <option value="red">🔴 Červená</option>
-                `;
-
-                selectColor.addEventListener('change', () => {
-                    applyCellColor(td, selectColor.value);
-                });
-
-                td.appendChild(input);
-                td.appendChild(selectColor);
-                tr.appendChild(td);
-            }
-            tableBody.appendChild(tr);
-        }
-
-        const allInputs = document.querySelectorAll('table input');
-        const allSelects = document.querySelectorAll('table select');
-
-        function applyCellColor(element, colorName) {
-            element.className = "p-1 rounded-xl border transition-all duration-150 relative group";
-            if(colorName === 'blue') element.classList.add('cell-blue');
-            else if(colorName === 'green') element.classList.add('cell-green');
-            else if(colorName === 'yellow') element.classList.add('cell-yellow');
-            else if(colorName === 'red') element.classList.add('cell-red');
-            else element.classList.add('cell-gray');
-        }
-
-        // ŽIVÉ NAČÍTÁNÍ Z DATABÁZE
-        onSnapshot(doc(db, "grid_schedule", "data"), (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.data();
-                allInputs.forEach(input => {
-                    if (data[input.id] !== undefined) input.value = data[input.id];
-                });
-                allSelects.forEach(select => {
-                    if (data[select.id] !== undefined) {
-                        select.value = data[select.id];
-                        const [,, r, c] = select.id.split('-');
-                        const td = document.getElementById(`td-${r}-${c}`);
-                        if(td) applyCellColor(td, data[select.id]);
-                    }
-                });
-            }
-        }, (error) => {
-            console.error("Chyba synchronizace: ", error);
-            showStatus("Hráči nemají přístup k datům.");
-        });
-
-        // PŘIHLÁŠENÍ ADMINA
-        adminBtn.addEventListener('click', () => {
-            if (!isAdmin) {
-                const pin = prompt("Zadej tvůj tajný Admin PIN:");
-                if (pin === ADMIN_PIN) {
-                    isAdmin = true;
-                    toggleFields(false);
-                    adminBtn.className = "px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black rounded-xl transition flex items-center gap-2 cursor-pointer shadow-lg text-sm";
-                    adminText.textContent = "Admin";
-                    adminIcon.className = "fa-solid fa-lock-open text-slate-950";
-                    saveAllBtn.classList.remove('hidden');
-                    saveAllBtn.classList.add('flex');
-                    showStatus("Tabulka odemčena k úpravám.", false);
-                } else if (pin !== null) {
-                    alert("Špatný kód!");
-                }
-            } else {
-                isAdmin = false;
-                toggleFields(true);
-                adminBtn.className = "px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl transition border border-slate-700 flex items-center gap-2 cursor-pointer text-sm";
-                adminText.textContent = "Čtení";
-                adminIcon.className = "fa-solid fa-lock";
-                saveAllBtn.classList.add('hidden');
-            }
-        });
-
-        function toggleFields(status) {
-            allInputs.forEach(input => input.disabled = status);
-            allSelects.forEach(select => select.disabled = status);
-        }
-
-        // UKLÁDÁNÍ
-        saveAllBtn.addEventListener('click', async () => {
-            if (!isAdmin) return;
-
-            const updateData = {};
-            allInputs.forEach(input => updateData[input.id] = input.value);
-            allSelects.forEach(select => updateData[select.id] = select.value);
-            updateData['cell_admin_verify'] = "140514"; 
-
-            try {
-                await setDoc(doc(db, "grid_schedule", "data"), updateData);
-                showStatus("Změny a barvy uloženy pro všechny hráče!", false);
-            } catch (error) {
-                console.error("Chyba ukládání: ", error);
-                showStatus("Chyba ukládání. Zkontroluj Rules ve Firebase.");
-            }
-        });
-    </script>
+/* Admin */
+function esc(s){return String(s||"").replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function render(){var a=load(),l=document.getElementById("list");
+  l.innerHTML=a.length?a.map(function(m){return '<div class="msg"><strong>'+esc(m.name)+'</strong><small>'+esc(m.email)+(m.phone?' · '+esc(m.phone):'')+' · '+esc(m.date)+'</small><small>'+esc(m.where)+' · '+esc(m.type)+'</small><p>'+esc(m.message)+'</p></div>';}).join(""):"<p>Zatím žádné zprávy.</p>";}
+document.getElementById("adminBtn").onclick=function(){
+  var c=prompt("Zadejte kód:");if(c===null)return;
+  if(c===CODE){render();var p=document.getElementById("panel");p.style.display="block";p.scrollIntoView({behavior:"smooth"});}else alert("Špatný kód.");};
+document.getElementById("close").onclick=function(){document.getElementById("panel").style.display="none";};
+document.getElementById("clear").onclick=function(){if(confirm("Opravdu smazat všechny zprávy?")){save([]);render();}};
+</script>
 </body>
 </html>
